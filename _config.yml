@@ -18,18 +18,18 @@
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
 
-title: Andreu
+title: Echo
 description: >- # this means to ignore newlines until "baseurl:"
-  Andreu Matoses Gimenez, personal website.
+  feiyushaw, personal website.
 
-author: Andreu Matoses Gimenez
+author: feiyushaw
 
 # If you're hosting your site at a Project repository on GitHub pages
 # (http://yourusername.github.io/repository-name)
 # and NOT your User repository (http://yourusername.github.io)
 # then add in the baseurl here, like this: "/repository-name"
 # baseurl: "/website" # the subpath of your site, e.g. /blog
-url: "http://andreumatoses.github.io" # the base hostname & protocol for your site, e.g. http://example.com
+url: "http://feiyushaw.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 
 # Enter your Google Analytics web tracking code (e.g. UA-2110908-2) to activate tracking
 google_analytics: G-ZQN5G9F3CC
