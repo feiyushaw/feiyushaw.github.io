@@ -1,1 +1,1 @@
-blog for non-tech post
+blog for non-tech posts
