@@ -1,0 +1,67 @@
+{{ define "main" }}
+<div class="flex flex-col">
+  <h1 class="text-4xl font-bold text-neutral-800 dark:text-neutral-200 mb-8">
+    {{ .Title }}
+  </h1>
+  
+  <div class="flex flex-col gap-y-8">
+    {{ range .Pages.GroupByDate "2006" }}
+    {{ if .Key }}
+    <div>
+      <h2 class="text-2xl font-bold text-primary-600 dark:text-primary-400 mb-4 pb-2 border-b-2 border-primary-600 dark:border-primary-400">
+        {{ .Key }}
+      </h2>
+    </div>
+    {{ end }}
+    
+    <div class="flex flex-col gap-y-6">
+      {{ range .Pages }}
+      <article class="group relative flex flex-col lg:flex-row lg:items-start gap-6">
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2 mb-2">
+            <time datetime="{{ .Date.Format "2006-01-02" }}" class="text-sm text-neutral-600 dark:text-neutral-400">
+              {{ .Date.Format "01-02" }}
+            </time>
+            {{ if .Params.ReadingTime }}
+            <span class="text-sm text-neutral-600 dark:text-neutral-400">
+              ·{{ .Params.ReadingTime }} 分钟
+            </span>
+            {{ end }}
+          </div>
+          
+          <h3 class="text-xl font-medium text-neutral-800 dark:text-neutral-200 mb-2 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
+            <a href="{{ .RelPermalink }}" class="no-underline">
+              {{ .Title }}
+            </a>
+          </h3>
+          
+          {{ if .Params.summary }}
+          <p class="text-neutral-600 dark:text-neutral-400 text-sm leading-relaxed mb-3">
+            {{ .Params.summary }}
+          </p>
+          {{ else if .Summary }}
+          <p class="text-neutral-600 dark:text-neutral-400 text-sm leading-relaxed mb-3">
+            {{ .Summary }}
+          </p>
+          {{ end }}
+        </div>
+        
+        <!-- 右侧标签区域 -->
+        {{ if .Params.tags }}
+        <div class="lg:w-48 flex-shrink-0">
+          <div class="flex flex-wrap gap-2 justify-end lg:justify-start">
+            {{ range .Params.tags }}
+            <a href="{{ (printf "/tags/%s" . | urlize) | relLangURL }}" class="text-xs bg-primary-100 dark:bg-primary-900 text-primary-800 dark:text-primary-200 px-2 py-1 rounded-full transition-colors hover:bg-primary-200 dark:hover:bg-primary-800 whitespace-nowrap">
+              {{ . }}
+            </a>
+            {{ end }}
+          </div>
+        </div>
+        {{ end }}
+      </article>
+      {{ end }}
+    </div>
+    {{ end }}
+  </div>
+</div>
+{{ end }}

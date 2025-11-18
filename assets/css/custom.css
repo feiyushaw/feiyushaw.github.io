@@ -1,0 +1,324 @@
+/* 导入字体配置 */
+@import url('./fonts.css');
+
+/* Hugo Apéro 主题配色变量 - 参考示例网站 */
+:root {
+  /* 柔和的配色方案 */
+  --primary-color: #c09591; /* 柔和的珊瑚色 */
+  --secondary-color: #8d7b68; /* 温暖的棕色 */
+  --accent-color: #d4a574; /* 金棕色 */
+  --text-color: #4a4a4a; /* 深灰色 */
+  --text-secondary: #6b6b6b; /* 中等灰色 */
+  --background-color: #faf8f5; /* 非常浅的米色背景 */
+  --card-background: #ffffff; /* 纯白色卡片 */
+  --link-color: #c09591; /* 链接使用主色调 */
+  --border-color: #f0ebe5; /* 浅米色边框 */
+  --code-bg: #f5f3f0; /* 浅米色代码背景 */
+  --highlight-bg: #f8f5f2; /* 高亮背景 */
+  --muted-color: #9e9e9e; /* 柔和的灰色 */
+}
+
+.dark {
+  /* 深色模式配色 */
+  --primary-color: #d4a574; /* 金棕色 */
+  --secondary-color: #a09080; /* 温暖的灰棕色 */
+  --accent-color: #e6c9a8; /* 浅金棕色 */
+  --text-color: #e8e8e8; /* 浅色文字 */
+  --text-secondary: #b8b8b8; /* 次要文字色 */
+  --background-color: #3a342a; /* 深棕色背景 */
+  --card-background: #4a4238; /* 深棕色卡片 */
+  --link-color: #d4a574; /* 链接使用金棕色 */
+  --border-color: #5a5248; /* 深色边框 */
+  --code-bg: #3a342a; /* 深色代码背景 */
+  --highlight-bg: #4a4238; /* 深色高亮背景 */
+  --muted-color: #9e9e9e; /* 深色模式下的柔和灰色 */
+}
+
+/* 应用自定义颜色到各种元素 */
+body {
+  color: var(--text-color) !important;
+  background-color: var(--background-color) !important;
+  background-image:  
+    linear-gradient(0deg, rgba(0, 0, 0, 0.04) 1px, transparent 1px),  
+    linear-gradient(90deg, rgba(0, 0, 0, 0.04) 1px, transparent 1px);
+  background-size: 8px 8px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* 修改卡片背景 */
+.card, .db-card {
+  background-color: var(--card-background) !important;
+  border-color: var(--border-color) !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* 修改链接颜色 */
+a {
+  color: var(--link-color) !important;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--accent-color) !important;
+}
+
+/* 修改标题颜色 */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text-color) !important;
+}
+
+/* 修改次要文本颜色 */
+.text-secondary, .muted {
+  color: var(--text-secondary) !important;
+}
+
+/* 保持Blowfish主题默认的代码块样式，只调整背景色 */
+.prose pre {
+  background-color: var(--code-bg) !important;
+}
+
+.prose code {
+  background-color: var(--code-bg) !important;
+  color: var(--text-color) !important;
+  padding: 0.125rem 0.25rem;
+  font-size: 0.875em;
+}
+
+/* 确保代码块内容不被自定义样式覆盖 */
+.prose pre code {
+  background-color: transparent !important;
+  padding: 0;
+  font-size: inherit;
+}
+
+/* 修改边框颜色 */
+.border, .border-t, .border-b {
+  border-color: var(--border-color) !important;
+}
+
+/* 修改文章列表样式 */
+article {
+  border-bottom: 1px solid var(--border-color) !important;
+  transition: background-color 0.3s ease;
+}
+
+article:hover {
+  background-color: var(--highlight-bg) !important;
+}
+
+/* 修改导航栏背景 */
+nav {
+  background-color: var(--background-color) !important;
+  border-color: var(--border-color) !important;
+}
+
+/* 修改按钮样式 */
+.btn-primary {
+  background-color: var(--primary-color) !important;
+  color: white !important;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.btn-primary:hover {
+  background-color: var(--accent-color) !important;
+}
+
+/* 修改标签样式 */
+.tag {
+  background-color: var(--primary-color) !important;
+  color: white !important;
+  padding: 0.25rem 0.5rem;
+  border-radius: 1rem;
+  font-size: 0.875rem;
+  transition: background-color 0.2s ease;
+}
+
+.tag:hover {
+  background-color: var(--accent-color) !important;
+}
+
+/* 修改高亮文本 */
+.highlight {
+  background-color: var(--highlight-bg) !important;
+  padding: 0.125rem 0.25rem;
+  border-radius: 2px;
+}
+
+/* 给目录的链接加荧光笔效果 - 使用柔和配色 */
+#TableOfContents a {
+text-decoration: none !important;
+color: inherit !important;
+background-image: linear-gradient(to top, rgba(192, 149, 145, 0.3) 30%, transparent 30%) !important;
+transition: background-size 0.3s ease;
+background-size: 100% 0.4em;
+background-repeat: no-repeat;
+background-position: 0 88%;
+}
+#TableOfContents a:hover {
+background-size: 100% 70% !important;
+background-image: linear-gradient(to top, rgba(192, 149, 145, 0.3) 88%, transparent 88%) !important;
+}
+
+/* 给正文的链接加荧光笔效果 - 使用柔和配色 */
+.article-content a {
+text-decoration: none !important;
+color: inherit !important;
+background-image: linear-gradient(to top, rgba(192, 149, 145, 0.3) 30%, transparent 30%) !important;
+transition: background-size 0.3s ease;
+background-size: 100% 0.4em;
+background-repeat: no-repeat;
+background-position: 0 88%;
+}
+.article-content a:hover {
+background-size: 100% 70% !important;
+background-image: linear-gradient(to top, rgba(192, 149, 145, 0.3) 88%, transparent 88%) !important;
+}
+
+/* 取消正文宽度限制 */
+.max-w-prose {
+  max-width: none !important;
+}
+
+/* Details折叠功能样式 */
+details[open] > summary svg {
+  transform: rotate(180deg);
+}
+
+details > summary svg {
+  transition: transform 0.3s ease;
+}
+
+details > summary {
+  list-style: none;
+  user-select: none;
+}
+
+details > summary::-webkit-details-marker {
+  display: none;
+}
+
+details > summary::before {
+  content: '';
+}
+
+/* 确保代码块在details中正常显示 */
+details .highlight {
+  background-color: var(--code-bg) !important;
+  border-radius: 4px;
+}
+
+details pre {
+  background-color: var(--code-bg) !important;
+  color: var(--text-color) !important;
+  border-radius: 4px;
+  overflow-x: auto;
+}
+
+details code {
+  background-color: transparent !important;
+  color: inherit !important;
+  padding: 0;
+}
+
+/* 自定义加粗文本样式 - 适配当前配色方案 */
+b, strong {
+  margin: 1px 2px;
+  padding: 2px;
+  color: rgba(74, 74, 74, 0.94);
+  background-color: rgba(192, 149, 145, 0.2);
+  font-weight: 400;
+  border-radius: 2px;
+}
+
+/* 暗黑模式加粗文本样式 */
+.dark b, .dark strong {
+  margin: 1px 2px;
+  padding: 2px;
+  color: rgba(232, 232, 232, 0.94);
+  background-color: rgba(212, 165, 116, 0.3);
+  font-weight: 400;
+  border-radius: 2px;
+}
+
+/* 归档页面样式 */
+.archive-list {
+  list-style: none;
+  padding-left: 0;
+}
+
+.archive-list li {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border-color);
+  transition: background-color 0.2s ease;
+}
+
+.archive-list li:hover {
+  background-color: var(--highlight-bg);
+  padding-left: 0.5rem;
+}
+
+.archive-list li:last-child {
+  border-bottom: none;
+}
+
+/* 音乐播放器样式 */
+.aplayer {
+  font-family: 'Commissioner', 'FangZhengShuSong', sans-serif !important;
+}
+
+.aplayer .aplayer-lrc {
+  font-family: 'Commissioner', 'FangZhengShuSong', sans-serif !important;
+}
+
+.aplayer .aplayer-list li {
+  font-family: 'Commissioner', 'FangZhengShuSong', sans-serif !important;
+}
+
+/* 确保音乐播放器在移动端的显示 */
+@media (max-width: 768px) {
+  .aplayer {
+    margin: 0 1rem;
+  }
+}
+
+/* 参考nanako.icu的按钮样式 */
+.homepage-action-link {
+  margin-top: 5rem;
+  text-align: center;
+}
+
+/* 进入按钮的样式 */
+.link-hover-effect {
+  color: var(--primary-color);
+  text-decoration: none;
+  transition: all 0.1s ease-in-out;
+  padding: 0.1rem 0.3rem;
+  border-bottom: 2px solid var(--primary-color);
+  margin-top: 24px;
+  display: inline-block;
+  font-weight: 500;
+  letter-spacing: 1px;
+}
+
+.dark .link-hover-effect {
+  color: var(--text-color);
+  text-decoration: none;
+  transition: all 0.1s ease-in-out;
+  padding: 0.1rem 0.3rem;
+  border-bottom: 2px solid var(--text-color);
+  margin-top: 24px;
+}
+
+/* 鼠标移动到进入按钮上显示的样式 */
+.link-hover-effect:hover {
+  background-color: var(--text-color);
+  color: var(--background-color);
+}
+
+.dark .link-hover-effect:hover {
+  background-color: var(--background-color);
+  color: var(--text-color);
+}

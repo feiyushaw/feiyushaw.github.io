@@ -1,0 +1,38 @@
+{{- $id := .Get "id" | default (printf "collapse-%d" .Ordinal) -}}
+{{- $title := .Get "title" | default "展开代码/收起" -}}
+{{- $open := .Get "open" | default "false" -}}
+
+<div class="collapse-container mb-6">
+  <button 
+    class="collapse-button flex items-center justify-between w-full p-3 bg-neutral-100 dark:bg-neutral-800 rounded-t-lg text-left hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors"
+    onclick="toggleCollapse('{{ $id }}')"
+    aria-expanded="{{ $open }}"
+    aria-controls="{{ $id }}"
+  >
+    <span class="font-medium">{{ $title }}</span>
+    <svg class="w-4 h-4 transform transition-transform {{ if eq $open "true" }}rotate-180{{ end }}" id="{{ $id }}-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+    </svg>
+  </button>
+  <div 
+    id="{{ $id }}" 
+    class="collapse-content {{ if ne $open "true" }}hidden{{ end }} p-4 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-b-lg"
+  >
+    {{ .Inner }}
+  </div>
+</div>
+
+<script>
+function toggleCollapse(id) {
+  const content = document.getElementById(id);
+  const icon = document.getElementById(id + '-icon');
+  
+  if (content.classList.contains('hidden')) {
+    content.classList.remove('hidden');
+    icon.classList.add('rotate-180');
+  } else {
+    content.classList.add('hidden');
+    icon.classList.remove('rotate-180');
+  }
+}
+</script>

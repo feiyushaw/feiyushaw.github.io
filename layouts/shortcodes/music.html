@@ -1,0 +1,29 @@
+<div class="music-player">
+  <h3 class="text-xl font-bold mb-4">🎵 我的网易云歌单</h3>
+  
+  <!-- require APlayer -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script>
+  <!-- require MetingJS -->
+  <script src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script>
+  
+  <div class="demo">
+    <!-- 使用网易云歌单 - 请替换为你自己的歌单ID -->
+    <meting-js
+      server="netease"
+      type="playlist"
+      id="122497999"
+      fixed="false"
+      autoplay="false"
+      theme="#c09591"
+      loop="all"
+      order="random"
+      preload="auto"
+      volume="0.4"
+      mutex="true"
+      list-folded="false"
+      list-max-height="250px"
+      lrc-type="0">
+    </meting-js>
+  </div>
+</div>

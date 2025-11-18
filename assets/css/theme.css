@@ -1,0 +1,140 @@
+/* 自定义配色方案 - 参考Hugo Apéro主题 */
+
+:root {
+  /* Hugo Apéro 主题配色 */
+  --primary-color: #d17a5a; /* 温暖的橙红色 */
+  --secondary-color: #6b5b95; /* 深紫色 */
+  --accent-color: #feb236; /* 明亮的橙色 */
+  --text-color: #2c3e50; /* 深蓝灰色 */
+  --text-secondary: #7f8c8d; /* 中等灰色 */
+  --background-color: #fdf6e3; /* 温暖的米色背景 */
+  --card-background: #ffffff; /* 纯白色卡片 */
+  --link-color: #d17a5a; /* 链接使用主色调 */
+  --border-color: #ecf0f1; /* 浅灰色边框 */
+  --code-bg: #f8f9fa; /* 浅灰色代码背景 */
+  --highlight-bg: #fff5e6; /* 浅橙色高亮背景 */
+  --muted-color: #95a5a6; /* 柔和的灰色 */
+}
+
+.dark {
+  /* 深色模式配色 */
+  --primary-color: #e67e22; /* 更亮的橙色 */
+  --secondary-color: #8e44ad; /* 更亮的紫色 */
+  --accent-color: #f39c12; /* 明亮的黄色 */
+  --text-color: #ecf0f1; /* 浅色文字 */
+  --text-secondary: #bdc3c7; /* 次要文字色 */
+  --background-color: #2c3e50; /* 深色背景 */
+  --card-background: #34495e; /* 深色卡片 */
+  --link-color: #e67e22; /* 链接使用亮橙色 */
+  --border-color: #4a5f7a; /* 深色边框 */
+  --code-bg: #2c3e50; /* 深色代码背景 */
+  --highlight-bg: #4a3c28; /* 深色高亮背景 */
+  --muted-color: #7f8c8d; /* 深色模式下的柔和灰色 */
+}
+
+/* 应用自定义颜色到各种元素 */
+body {
+  color: var(--text-color);
+  background-color: var(--background-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* 修改首页布局 */
+main {
+  background-color: var(--background-color);
+}
+
+/* 修改卡片背景 */
+.card, .db-card {
+  background-color: var(--card-background);
+  border-color: var(--border-color);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* 修改链接颜色 */
+a {
+  color: var(--link-color);
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--accent-color);
+}
+
+/* 修改标题颜色 */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text-color);
+}
+
+/* 修改文本颜色 */
+p, span, div {
+  color: var(--text-color);
+}
+
+/* 修改次要文本颜色 */
+.text-secondary, .muted {
+  color: var(--text-secondary);
+}
+
+/* 修改代码块背景 */
+pre, code {
+  background-color: var(--code-bg);
+  color: var(--text-color);
+  border-radius: 4px;
+}
+
+/* 修改边框颜色 */
+.border, .border-t, .border-b {
+  border-color: var(--border-color);
+}
+
+/* 修改文章列表样式 */
+article {
+  border-bottom: 1px solid var(--border-color);
+  transition: background-color 0.3s ease;
+}
+
+article:hover {
+  background-color: var(--highlight-bg);
+}
+
+/* 修改导航栏背景 */
+nav {
+  background-color: var(--background-color);
+  border-color: var(--border-color);
+}
+
+/* 修改按钮样式 */
+.btn-primary {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.btn-primary:hover {
+  background-color: var(--accent-color);
+}
+
+/* 修改标签样式 */
+.tag {
+  background-color: var(--primary-color);
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 1rem;
+  font-size: 0.875rem;
+  transition: background-color 0.2s ease;
+}
+
+.tag:hover {
+  background-color: var(--accent-color);
+}
+
+/* 修改高亮文本 */
+.highlight {
+  background-color: var(--highlight-bg);
+  padding: 0.125rem 0.25rem;
+  border-radius: 2px;
+}

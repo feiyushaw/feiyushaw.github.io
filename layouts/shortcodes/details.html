@@ -1,0 +1,15 @@
+{{- $title := .Get "title" | default "展开/收起" -}}
+{{- $open := .Get "open" | default "false" -}}
+{{- $lang := .Get "lang" | default "" -}}
+
+<details {{ if eq $open "true" }}open{{ end }} class="my-6 border border-neutral-200 dark:border-neutral-700 rounded-lg overflow-hidden">
+  <summary class="flex items-center justify-between w-full px-4 py-3 bg-neutral-100 dark:bg-neutral-800 cursor-pointer hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors">
+    <span class="font-medium text-neutral-900 dark:text-neutral-100">{{ $title }}</span>
+    <svg class="w-4 h-4 transform transition-transform details-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+    </svg>
+  </summary>
+  <div class="p-4 bg-neutral-50 dark:bg-neutral-900">
+    {{ .Inner }}
+  </div>
+</details>

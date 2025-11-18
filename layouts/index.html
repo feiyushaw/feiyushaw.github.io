@@ -1,0 +1,32 @@
+{{ define "main" }}  
+<main class="w-full mt-20 px-6">  
+    <section class="flex flex-col lg:flex-row items-center justify-between gap-16 max-w-6xl mx-auto">  
+  
+        <!-- 图片区块 -->  
+        <div class="lg:w-1/2 order-first lg:order-none shrink-0">  
+            {{ with .Params.images }}  
+            {{ range first 1 . }}  
+            <img width="550" height="450" src="{{ . }}" alt="Background"  
+                 class="mx-auto rounded-xl shadow-md object-contain" />  
+            {{ end }}  
+            {{ end }}  
+        </div>  
+  
+        <!-- 文字区块 -->  
+        <div class="lg:w-1/2 text-right flex flex-col justify-center">  
+            {{ with .Params.title }}  
+            <h1 class="text-4xl lg:text-5xl font-semibold mb-4 leading-tight max-w-md mx-auto lg:mx-0">{{ . }}</h1>  
+            {{ end }}  
+  
+            {{ with .Params.subtitle }}  
+            <h2 class="text-sm uppercase tracking-widest font-bold text-gray-500 mb-6 max-w-md mx-auto lg:mx-0">{{ . }}</h2>  
+            {{ end }}  
+  
+            {{ with .Params.description }}  
+            <p class="text-lg text-gray-700 mb-8 mt-6 leading-relaxed max-w-md mx-auto lg:mx-0 whitespace-nowrap">{{ . | markdownify }}</p>  
+            {{ end }}  
+        </div>  
+  
+    </section>  
+</main>  
+{{ end }}

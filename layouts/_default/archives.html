@@ -1,0 +1,54 @@
+{{ define "main" }}
+  {{ .Scratch.Set "scope" "single" }}
+  <article>
+    {{/* Hero */}}
+    {{ if .Params.showHero | default (site.Params.article.showHero | default false) }}
+      {{ $heroStyle := .Params.heroStyle }}
+      {{ if not $heroStyle }}{{ $heroStyle = site.Params.article.heroStyle }}{{ end }}
+      {{ $heroStyle := print "hero/" $heroStyle ".html" }}
+      {{ if templates.Exists ( printf "partials/%s" $heroStyle ) }}
+        {{ partial $heroStyle . }}
+      {{ else }}
+        {{ partial "hero/basic.html" . }}
+      {{ end }}
+    {{ end }}
+
+    {{/* Header */}}
+    <header id="single_header" class="mt-5 max-w-prose">
+      {{ if .Params.showBreadcrumbs | default (site.Params.article.showBreadcrumbs | default false) }}
+        {{ partial "breadcrumbs.html" . }}
+      {{ end }}
+      <h1 class="mt-0 text-4xl font-extrabold text-neutral-900 dark:text-neutral">
+        {{ .Title | emojify }}
+      </h1>
+      <div class="mt-1 mb-6 text-base text-neutral-500 dark:text-neutral-400 print:hidden">
+        {{ partial "article-meta/basic.html" (dict "context" . "scope" "single") }}
+      </div>
+    </header>
+
+    {{/* Body */}}
+    <section class="flex flex-col max-w-full mt-0 prose dark:prose-invert lg:flex-row">
+      <div class="min-w-0 min-h-0 max-w-fit">
+        <div class="article-content" id="article-content">
+          {{ range $year := (.Site.RegularPages.GroupByDate "2006") }}
+          {{ if ne $year.Key "0001" }}
+          <h3 class="text-2xl font-bold mt-8 mb-4">{{ $year.Key }}</h3>
+          <ul class="archive-list space-y-2 ml-4">
+            {{ range (where $year.Pages "Type" "posts") }}
+            <li class="flex items-center">
+              <span class="text-neutral-500 dark:text-neutral-400 mr-4 min-w-[100px]">
+                {{ .PublishDate.Format "2006-01-02" }}
+              </span>
+              <a href="{{ .RelPermalink }}" class="hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+                {{ .Title }}
+              </a>
+            </li>
+            {{ end }}
+          </ul>
+          {{ end }}
+          {{ end }}
+        </div>
+      </div>
+    </section>
+  </article>
+{{ end }}
