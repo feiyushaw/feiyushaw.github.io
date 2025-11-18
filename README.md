@@ -1,1 +1,1 @@
-self blog
+self blog for non-tech posts
