@@ -34,7 +34,7 @@ mainSections = ["posts"]
   showRecentItems = 5
   showMoreLink = true
   showMoreLinkDest = "/blowfish_lite/posts"
-  cardView = false
+  cardView = true
   cardViewScreenWidth = false
   layoutBackgroundBlur = false # only used when layout equals background
 

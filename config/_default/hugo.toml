@@ -3,8 +3,9 @@
 # https://nunocoracao.github.io/blowfish/docs/getting-started/
 
 theme = "blowfish"
-# baseURL = "https://your_domain.com/"
+baseURL = "https://blog.11222022.xyz/"
 defaultContentLanguage = "zh"
+disableLanguages = ["en", "pt-PT"]
 
 enableRobotsTXT = true
 pagination.pagerSize = 20
@@ -30,5 +31,3 @@ enableEmoji = true
 
 [outputs]
   home = ["HTML", "RSS", "JSON"]
-
-disableLanguages = ["en", "pt-PT"]

@@ -1,5 +1,6 @@
 /* 导入字体配置 */
 @import url('./fonts.css');
+@import "heti.min.css";
 
 /* Hugo Apéro 主题配色变量 - 参考示例网站 */
 :root {
