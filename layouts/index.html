@@ -21,7 +21,7 @@
     <!-- 主内容容器 -->  
     <div class="homepage-container flex flex-col lg:flex-row h-screen w-screen">  
         <!-- 图片区块 -->  
-        <div class="image-section w-full h-1/2 lg:h-full lg:w-1/2 shrink-0">  
+        <div class="image-section w-full h-1/2 shrink-0">  
             {{ with .Params.images }}  
             {{ range first 1 . }}  
             <img src="{{ . }}" alt="Background" class="background-image w-full h-full object-cover" />  
@@ -32,7 +32,7 @@
         </div>  
   
         <!-- 文字区块 -->  
-        <div class="text-section w-full lg:w-1/2 p-8 lg:p-16 flex flex-col justify-between">  
+        <div class="text-section w-full p-8 lg:p-16 flex flex-col justify-between">  
             <div class="text-content mt-8 lg:mt-32">  
                 {{ with .Params.title }}  
                     <h1 class="homepage-title text-4xl lg:text-5xl font-semibold mb-4 leading-tight max-w-md text-primary-800 dark:text-neutral-100">  

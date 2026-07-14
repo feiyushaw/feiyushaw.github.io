@@ -430,7 +430,7 @@ b, strong {
 @media (min-width: 1024px) {
   .image-section {
     height: 100%;
-    width: 50%;
+    width: 35%;
     padding: 4rem;
   }
 }
@@ -455,7 +455,7 @@ b, strong {
 
 @media (min-width: 1024px) {
   .text-section {
-    width: 50%;
+    width: 65%;
     padding: 4rem;
   }
 }
