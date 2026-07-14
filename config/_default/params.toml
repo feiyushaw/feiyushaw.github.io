@@ -11,12 +11,13 @@ autoSwitchAppearance = true
 
 enableSearch = true
 enableCodeCopy = true
+disableImageZoom = false
 
 mainSections = ["posts"]
 # robots = ""
 
 [header]
-  layout = "basic" # valid options: basic, fixed
+  layout = "fixed" # valid options: basic, fixed
   showLanguageSwitcher = false
 
 [footer]

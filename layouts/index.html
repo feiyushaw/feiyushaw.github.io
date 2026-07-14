@@ -1,32 +1,77 @@
-{{ define "main" }}  
-<main class="w-full mt-20 px-6">  
-    <section class="flex flex-col lg:flex-row items-center justify-between gap-16 max-w-6xl mx-auto">  
+<!doctype html>
+<html
+  lang="{{ with site.Params.isoCode | default (site.LanguageCode | default `en`) }}{{- . -}}{{ end }}"
+  dir="{{ cond (site.Params.rtl | default false) `rtl` `ltr` }}"
+  class="scroll-smooth"
+  data-default-appearance="{{ site.Params.defaultAppearance | default `light` }}"
+  data-auto-appearance="{{ site.Params.autoSwitchAppearance | default `true` }}">
   
+  {{- partial "head.html" . -}}
+  {{- partialCached "init.html" . -}}
+  
+  <body class="text-lg bg-neutral text-neutral-900 dark:bg-neutral-800 dark:text-neutral scrollbar-thin scrollbar-track-neutral-200 scrollbar-thumb-neutral-400 dark:scrollbar-track-neutral-800 dark:scrollbar-thumb-neutral-600 m-0 p-0">
+  
+    <!-- 顶部语言选择浮动按钮 -->  
+    <div class="language-toggle absolute top-4 right-4 z-50 w-24 flex items-center justify-between">  
+        <div>  
+            {{ partial "translations.html" . }}  
+        </div>  
+    </div>  
+
+    <!-- 主内容容器 -->  
+    <div class="homepage-container flex flex-col lg:flex-row h-screen w-screen">  
         <!-- 图片区块 -->  
-        <div class="lg:w-1/2 order-first lg:order-none shrink-0">  
+        <div class="image-section w-full h-1/2 lg:h-full lg:w-1/2 shrink-0">  
             {{ with .Params.images }}  
             {{ range first 1 . }}  
-            <img width="550" height="450" src="{{ . }}" alt="Background"  
-                 class="mx-auto rounded-xl shadow-md object-contain" />  
+            <img src="{{ . }}" alt="Background" class="background-image w-full h-full object-cover" />  
             {{ end }}  
-            {{ end }}  
+            {{ else }}
+            <img src="/cover-no-frame.jpg" alt="Background" class="background-image w-full h-full object-cover" />
+            {{ end }}
         </div>  
   
         <!-- 文字区块 -->  
-        <div class="lg:w-1/2 text-right flex flex-col justify-center">  
-            {{ with .Params.title }}  
-            <h1 class="text-4xl lg:text-5xl font-semibold mb-4 leading-tight max-w-md mx-auto lg:mx-0">{{ . }}</h1>  
-            {{ end }}  
+        <div class="text-section w-full lg:w-1/2 p-8 lg:p-16 flex flex-col justify-between">  
+            <div class="text-content mt-8 lg:mt-32">  
+                {{ with .Params.title }}  
+                    <h1 class="homepage-title text-4xl lg:text-5xl font-semibold mb-4 leading-tight max-w-md text-primary-800 dark:text-neutral-100">  
+                        {{ . }}  
+                    </h1>  
+                {{ end }}  
   
-            {{ with .Params.subtitle }}  
-            <h2 class="text-sm uppercase tracking-widest font-bold text-gray-500 mb-6 max-w-md mx-auto lg:mx-0">{{ . }}</h2>  
-            {{ end }}  
+                {{ with .Params.subtitle }}  
+                    <h2 class="homepage-subtitle text-sm uppercase tracking-widest font-bold text-neutral-500 dark:text-neutral-400 mb-4 max-w-md">{{ . }}</h2>  
+                {{ end }}  
   
-            {{ with .Params.description }}  
-            <p class="text-lg text-gray-700 mb-8 mt-6 leading-relaxed max-w-md mx-auto lg:mx-0 whitespace-nowrap">{{ . | markdownify }}</p>  
-            {{ end }}  
+                <div class="homepage-content text-lg text-neutral-700 dark:text-neutral-300 mb-8 mt-6 leading-relaxed max-w-md mx-auto lg:mx-0 whitespace-normal">
+                    {{ .Content }}
+                </div>
+            </div>
+  
+            <!-- 版权信息区块 -->  
+            <div class="footer-info mt-8">  
+                {{ if site.Params.footer.showCopyright | default true }}  
+                    <p class="footer-text text-sm text-neutral-500 dark:text-neutral-400">  
+                        {{ with replace site.Params.copyright "{ year }" now.Year }}  
+                            {{ . | markdownify }}  
+                        {{ else }}  
+                            &copy; {{ now.Format "2006" }} {{ site.Params.Author.name | markdownify }}  
+                        {{ end }}  
+                    </p>  
+                {{ end }}  
+  
+                {{ if site.Params.footer.showThemeAttribution | default true }}  
+                    <p class="footer-text footer-attribution text-sm text-neutral-500 dark:text-neutral-400 mt-1">  
+                        {{ $hugo := printf `<a class="hover:underline hover:decoration-primary-400 hover:text-primary-500"  
+                href="https://gohugo.io/" target="_blank" rel="noopener noreferrer">Hugo</a>` }}  
+                        {{ $blowfish := printf `<a class="hover:underline hover:decoration-primary-400 hover:text-primary-500"  
+                href="https://blowfish.page/" target="_blank" rel="noopener noreferrer">Blowfish</a>` }}  
+                        {{ i18n "footer.powered_by" (dict "Hugo" $hugo "Theme" $blowfish) | safeHTML }}  
+                    </p>  
+                {{ end }}  
+            </div>  
         </div>  
-  
-    </section>  
-</main>  
-{{ end }}
+    </div>  
+  </body>
+</html>

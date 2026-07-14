@@ -1,6 +1,6 @@
 ---
-title: "昼梦日和"
-subtitle: "梦是现实的延续，现实是梦的终结"
+title: "Pour l'honneur de l'esprit humain"
+subtitle: "For the honor of the human spirit"
 description: "记录生活，分享技术，探索世界"
 images:
   - "/img/homepage.jpg"

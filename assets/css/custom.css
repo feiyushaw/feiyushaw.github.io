@@ -44,7 +44,16 @@ body {
     linear-gradient(90deg, rgba(0, 0, 0, 0.04) 1px, transparent 1px);
   background-size: 8px 8px;
   transition: background-color 0.3s ease, color 0.3s ease;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
+.dark body {
+  background-image:  
+    linear-gradient(0deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px),  
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+}
+
 
 /* 修改卡片背景 */
 .card, .db-card {
@@ -322,4 +331,199 @@ b, strong {
 .dark .link-hover-effect:hover {
   background-color: var(--background-color);
   color: var(--text-color);
+}
+
+/* db-card -------- start*/  
+.db-card {  
+  margin: 2rem 0;  
+  background: #FAFAFA;  
+  border-radius: 8px;  
+  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.04), 0px 0px 2px rgba(0, 0, 0, 0.06), 0px 0px 1px rgba(0, 0, 0, 0.04);  
+}  
+
+.dark .db-card {
+  background: var(--card-background);
+}
+
+.db-card-subject {  
+  display: flex;  
+  align-items: flex-start;  
+  line-height: 1.6;  
+  padding: 12px;  
+  position: relative  
+}  
+
+.db-card-content {  
+  flex: 1 1 auto  
+}  
+
+.db-card-post {  
+  width: 96px;  
+  margin-right: 15px;  
+  display: flex;  
+  flex: 0 0 auto  
+}  
+
+.db-card-post img {
+  width: 100%;
+  border-radius: 4px;
+}
+
+.db-card-title {  
+  margin-bottom: 5px;  
+  font-size: 18px  
+}  
+
+.db-card-title a {  
+  text-decoration: none!important  
+}  
+
+.db-card-abstract,  
+.db-card-comment {  
+  font-size: 14px;  
+  overflow: auto;  
+  max-height: 7rem;
+  margin-top: 8px;
+}
+
+.db-card-cate {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: var(--primary-color);
+  color: #fff;
+  font-size: 12px;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.rating_nums {
+  font-size: 14px;
+  color: var(--text-color);
+  margin-left: 4px;
+}
+
+/* Homepage Layout CSS */
+.homepage-container {  
+  display: flex;  
+  height: 100vh;  
+  width: 100vw;  
+  flex-direction: column;
+}
+
+@media (min-width: 1024px) {
+  .homepage-container {
+    flex-direction: row;
+  }
+}
+
+.image-section {  
+  width: 100%;  
+  height: 50%;
+  flex-shrink: 0;
+}
+
+@media (min-width: 1024px) {
+  .image-section {
+    height: 100%;
+    width: 50%;
+  }
+}
+
+.background-image {  
+  width: 100%;  
+  height: 100%;  
+  object-fit: cover;  
+}
+
+.text-section {  
+  width: 100%;  
+  padding: 2rem;  
+  display: flex;  
+  flex-direction: column;  
+  justify-content: space-between;  
+}
+
+@media (min-width: 1024px) {
+  .text-section {
+    width: 50%;
+    padding: 4rem;
+  }
+}
+
+.text-content {  
+  margin-top: 2rem;  
+}
+
+@media (min-width: 1024px) {
+  .text-content {
+    margin-top: 8rem;
+  }
+}
+
+.homepage-title {  
+  color: var(--primary-color);  
+  font-size: 2rem;  
+  line-height: 1.25;  
+  font-weight: 600;  
+  margin-bottom: 1rem;  
+  max-width: 28rem;  
+  margin-left: auto;  
+  margin-right: auto;  
+}
+
+.dark .homepage-title {  
+  color: var(--text-color);  
+}
+
+@media (min-width: 1024px) {  
+  .homepage-title {  
+    font-size: 2.5rem; 
+    margin-left: 0;  
+    margin-right: 0;  
+  }  
+}
+
+.homepage-subtitle {  
+  font-size: 1rem;  
+  color: var(--text-secondary);  
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+}
+
+.homepage-description {  
+  font-size: 1.125rem;
+  color: var(--text-color);
+  line-height: 1.75;  
+  max-width: 28rem;  
+  margin: 1.5rem auto 2rem auto;  
+}
+
+@media (min-width: 1024px) {
+  .homepage-subtitle, .homepage-description {
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+
+.footer-info {
+  margin-top: 2rem;
+}
+
+.footer-text {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.language-toggle {  
+  position: absolute;  
+  top: 1rem;  
+  right: 1rem;  
+  width: 100px;  
+  z-index: 50;  
+  display: flex;  
+  align-items: center;  
+  justify-content: space-between;  
 }
