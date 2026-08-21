@@ -1,15 +1,15 @@
 ---
 title: "Pour l'honneur de l'esprit humain"
 subtitle: "For the honor of the human spirit"
-description: "记录生活，分享技术，探索世界"
+description: "记录技术、研究与生活"
 images:
   - "/img/homepage.jpg"
 ---
 
-这里是我分享想法和经验的地方，记录生活中的点点滴滴，探索技术的无限可能。
+记录技术、研究与生活中的想法，把长期思考整理成可以反复阅读的笔记。
 
 <p class="homepage-action-link">
-    <a class="link-hover-effect" href="/posts/">
-        ENTER MY DREAM
+    <a href="/posts/">
+        ENTER THE NOTES
     </a>
 </p>
