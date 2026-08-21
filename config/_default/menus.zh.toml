@@ -1,32 +1,25 @@
 # -- 主菜单 --
-# 主菜单显示在页面顶部的header中
-# 可接受的参数包括 name, pageRef, page, url, title, weight
+# 保持一级导航克制，标签通过文章页和归档页进入。
 
 [[main]]
-  name = "博客"
+  name = "文章"
   pageRef = "posts"
   weight = 10
 
 [[main]]
-  name = "关于"
-  pageRef = "about"
-  weight = 12
+  name = "归档"
+  pageRef = "archives"
+  weight = 20
 
 [[main]]
   name = "摄影"
   pageRef = "gallery"
-  weight = 13
+  weight = 30
 
 [[main]]
-  name = "归档"
-  pageRef = "archives"
-  weight = 15
-
-[[main]]
-  name = "标签"
-  pageRef = "tags"
-  weight = 20
-
+  name = "关于"
+  pageRef = "about"
+  weight = 40
 
 # -- 页脚菜单 --
 # 页脚菜单显示在页面底部、版权信息之前
