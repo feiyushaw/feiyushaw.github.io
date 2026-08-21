@@ -2,13 +2,14 @@
 title: "扩展CSS"
 ---
 
-/* 导入所有自定义CSS */
-@import url("theme.css");
+/* Font and text-layout foundations */
 @import url("fonts.css");
-@import url("custom.css");
-@import url("article-list.css");
+@import url("heti.min.css");
 
-/* Research notebook / editorial redesign layer */
+/* Component-only styles. No global theme colors/layouts here. */
+@import url("components.css");
+
+/* Single visual system */
 @import url("editorial.css");
 @import url("homepage-editorial.css");
 @import url("editorial-scale-fix.css");
