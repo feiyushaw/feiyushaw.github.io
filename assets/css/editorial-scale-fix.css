@@ -1,26 +1,26 @@
 /* Conservative scale corrections for the editorial redesign.
-   Keeps the visual system, but restores calmer proportions closer to the original site. */
+   This is the final calibration layer; legacy global theme CSS is no longer loaded. */
 
 :root {
-  --editorial-grid: rgba(41, 41, 41, 0.012);
+  --editorial-grid: rgba(41, 41, 41, 0.010);
 }
 
 .dark {
-  --editorial-grid: rgba(255, 255, 255, 0.012);
+  --editorial-grid: rgba(255, 255, 255, 0.010);
 }
 
 body {
-  background-size: 24px 24px !important;
+  background-size: 26px 26px !important;
 }
 
-/* Homepage: reduce the oversized magazine-cover treatment. */
+/* Homepage: calm split-screen composition. */
 .homepage-shell {
-  grid-template-columns: minmax(0, 52fr) minmax(380px, 48fr);
+  grid-template-columns: minmax(0, 52fr) minmax(360px, 48fr);
 }
 
 .homepage-panel {
-  padding: clamp(1.5rem, 2.4vw, 2.5rem) clamp(2rem, 4vw, 4.5rem);
-  background-size: 24px 24px;
+  padding: clamp(1.5rem, 2.4vw, 2.5rem) clamp(2rem, 4vw, 4.25rem);
+  background-size: 26px 26px;
 }
 
 .homepage-copy {
@@ -36,9 +36,9 @@ body {
 
 .homepage-title {
   max-width: 15ch;
-  font-size: clamp(2.5rem, 3.4vw, 4.35rem);
-  line-height: 1.04;
-  letter-spacing: -0.035em;
+  font-size: clamp(2.5rem, 3.4vw, 4.15rem);
+  line-height: 1.05;
+  letter-spacing: -0.032em;
 }
 
 .homepage-content {
@@ -50,6 +50,7 @@ body {
 
 .homepage-content .homepage-action-link {
   margin-top: 1.65rem;
+  text-align: left;
 }
 
 .homepage-nav {
@@ -57,9 +58,10 @@ body {
   letter-spacing: 0.08em;
 }
 
-/* Lists: keep the archive feel without giant section headings. */
+/* Lists */
 .editorial-list {
-  width: min(100%, 900px);
+  width: min(100%, 820px);
+  margin-inline: auto;
 }
 
 .editorial-list__header {
@@ -67,14 +69,14 @@ body {
 }
 
 .editorial-list__title {
-  font-size: clamp(2.15rem, 4.5vw, 3.5rem);
-  line-height: 1.02;
-  letter-spacing: -0.035em;
+  font-size: clamp(2.05rem, 4vw, 3.15rem);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
 }
 
 .editorial-year {
-  grid-template-columns: 76px minmax(0, 1fr);
-  gap: 1.5rem;
+  grid-template-columns: 70px minmax(0, 1fr);
+  gap: 1.4rem;
 }
 
 .editorial-entry {
@@ -82,7 +84,7 @@ body {
 }
 
 .editorial-entry__title {
-  font-size: clamp(1.05rem, 1.8vw, 1.3rem);
+  font-size: clamp(1.04rem, 1.65vw, 1.24rem);
 }
 
 .editorial-entry__summary {
@@ -91,66 +93,102 @@ body {
   line-height: 1.65;
 }
 
-/* Article: title should introduce the text, not dominate the viewport. */
+/* Article */
 .editorial-article__header {
-  width: min(100%, 760px);
+  width: min(100%, 720px);
   margin: 2.3rem auto 2rem;
 }
 
 .editorial-article__title {
-  font-size: clamp(2.15rem, 4.2vw, 3.55rem);
-  line-height: 1.08;
-  letter-spacing: -0.035em;
+  font-size: clamp(2.05rem, 4vw, 3.35rem);
+  line-height: 1.1;
+  letter-spacing: -0.032em;
 }
 
 .editorial-article__layout {
-  grid-template-columns: minmax(0, 740px) minmax(180px, 220px);
-  gap: clamp(2rem, 4vw, 4rem);
+  grid-template-columns: minmax(0, 720px) minmax(170px, 210px);
+  gap: clamp(2rem, 4vw, 3.5rem);
 }
 
 .editorial-article__main,
 .editorial-article__content {
-  max-width: 740px !important;
+  max-width: 720px !important;
 }
 
 .editorial-article__content {
-  font-size: 1.02rem;
-  line-height: 1.84;
+  font-size: 1.01rem;
+  line-height: 1.82;
 }
 
-@media (max-width: 1023px) {
-  .homepage-visual {
-    height: min(52vh, 560px);
-  }
-
-  .homepage-copy {
-    padding: 3rem 0 3.75rem;
-  }
-
-  .homepage-title {
-    max-width: 16ch;
-    font-size: clamp(2.55rem, 8vw, 4.25rem);
-  }
-
-  .editorial-article__main,
-  .editorial-article__content,
-  .editorial-article__header {
-    max-width: 740px !important;
-  }
-}
-
-@media (max-width: 640px) {
-  body {
-    background-size: 22px 22px !important;
+/* Important: a CSS viewport around 800–1023px is still desktop for this site.
+   The base homepage stylesheet used to collapse here; explicitly restore the split. */
+@media (min-width: 721px) and (max-width: 1023px) {
+  .homepage-shell {
+    display: grid;
+    grid-template-columns: minmax(0, 52fr) minmax(340px, 48fr);
+    min-height: 100vh;
   }
 
   .homepage-visual {
-    height: 39vh;
-    min-height: 280px;
+    min-height: 100vh;
+    height: auto;
+  }
+
+  .homepage-cover {
+    min-height: 100vh;
+    height: 100%;
   }
 
   .homepage-panel {
+    min-height: 100vh;
+    border-top: 0;
+    border-left: 1px solid var(--editorial-line);
+    padding: 1.5rem clamp(1.5rem, 3vw, 2.5rem);
+  }
+
+  .homepage-nav {
+    justify-content: flex-end;
+  }
+
+  .homepage-copy {
+    padding: 2.5rem 0 3rem;
+  }
+
+  .homepage-title {
+    max-width: 15ch;
+    font-size: clamp(2.35rem, 5.3vw, 3.35rem);
+  }
+}
+
+@media (max-width: 720px) {
+  body {
+    background-size: 24px 24px !important;
+  }
+
+  .homepage-shell {
+    display: block;
+    min-height: auto;
+  }
+
+  .homepage-visual {
+    height: 40vh;
+    min-height: 280px;
+  }
+
+  .homepage-cover {
+    min-height: 0;
+    height: 100%;
+  }
+
+  .homepage-panel {
+    min-height: auto;
+    border-left: 0;
+    border-top: 1px solid var(--editorial-line);
     padding: 1.15rem 1.2rem 1.7rem;
+  }
+
+  .homepage-nav {
+    justify-content: flex-start;
   }
 
   .homepage-copy {
@@ -159,7 +197,7 @@ body {
 
   .homepage-title {
     max-width: 15ch;
-    font-size: clamp(2.35rem, 11vw, 3.5rem);
+    font-size: clamp(2.25rem, 10vw, 3.25rem);
   }
 
   .homepage-content {
@@ -167,16 +205,20 @@ body {
     line-height: 1.75;
   }
 
+  .editorial-list {
+    width: 100%;
+  }
+
   .editorial-list__title {
-    font-size: 2.35rem;
+    font-size: 2.2rem;
   }
 
   .editorial-article__title {
-    font-size: clamp(2rem, 10vw, 2.85rem);
+    font-size: clamp(1.95rem, 9vw, 2.65rem);
   }
 
   .editorial-article__content {
     font-size: 0.98rem;
-    line-height: 1.78;
+    line-height: 1.76;
   }
 }
