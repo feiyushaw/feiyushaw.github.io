@@ -1,8 +1,105 @@
 # ==============================================================================
+# 微语 / 书摘 / 个人推特数据源 (Memos & Quotes)
+# ==============================================================================
+# 添加新内容说明：
+# - date: 格式 "YYYY-MM-DD HH:mm:ss" 或 "YYYY-MM-DD"
+# - content: 正文内容，支持多段落与 Markdown 语法（如 **加粗**、*斜体*、`代码`、[链接](url) 等）
+# - source: 出处/书名/文章名（如 "《大师和玛格丽特》 (page: 726)"，选填）
+# - author: 原作者（如 "米哈伊尔·布尔加科夫"，选填）
+# - device: 发布设备或来源（如 "Mac", "iPhone", "Web", "微信读书", "Kindle", "手记"，选填）
+# - location: 发布地点（选填）
+# - tags: 标签列表，用于按分类筛选（如 ["书摘", "外国文学"], ["短句", "随感"]）
+# - pinned: true/false 是否置顶（选填，置顶条目将优先展示并带有图章标记）
+# - images: 图片链接列表（选填，支持多张图片网格展示并支持点击放大预览）
+# ==============================================================================
 
 - id: "memo-20260907-2980"
   date: "2026-09-07 17:02:41"
   content: "测试你好呀"
   device: "Mac"
-# 微语 / 书摘 / 个人推特数据源 (Memos & Quotes)
-# ==============================================================================
+  tags: ["随感"]
+
+- id: "memo-20250127-1"
+  date: "2025-01-27 15:12:14"
+  pinned: true
+  content: |
+    皎洁的满月对玛格丽特极力相助，亮得胜过最亮的电灯。她清楚地看到，坐在椅上的人的两眼毫无生气，像个盲人，他在急切地不住地搓着双手，两只视而不见的眼睛凝望着空中的一轮玉盘。玛格丽特还看到，那是一个笨重的石椅，上面似乎还有火花在闪动；石椅旁边卧着一只黑毛尖耳朵大狗，也像它的主人一样不安地凝望着月亮。
+
+    坐在椅上的人的脚旁扔着些碎坛片，地上有一汪深红色的水，像是永远不会干涸。
+
+    骑士们勒住坐骑。
+
+    “您的小说，他们看过了，”沃兰德转身对大师说，“他们只提出一点：对于小说没有结尾表示遗憾。所以，我现在就想让您看看您书中的主人公。将近两千年了，他一直坐在这石平台上，睡在这里。然而，每当满月来临时，他就睡不着，他为失眠所苦。满月不仅折磨他，还折磨他忠实的卫士——这只狗。如果说，怯懦果真是人类最严重的缺陷，那么，大概，这只狗总没有犯怯懦的罪过吧。这只猛犬除了雷电之外是什么都不畏惧的。可是，有什么办法呢，谁在爱，谁就应该与他所爱的人分担命运。”
+  source: "《大师和玛格丽特》 (page: 726)"
+  author: "米哈伊尔·布尔加科夫"
+  device: "Mac"
+  tags: ["书摘", "外国文学"]
+
+- id: "memo-20241028-2"
+  date: "2024-10-28 20:07:19"
+  content: |
+    I feared the dragon. Every morning, I straggled in somewhere around the tail, and occasionally I had to be reminded. For a while, I swore to do better; I glued my eyes to the phone at six thirty a.m., fantasizing about finishing as a top-five dragon connector. But it was impossible; Chinese people were incredibly skilled at this kind of thing, and often there were seven or eight completed dragon links by 6:31.
+  source: "Other Rivers (page: 466)"
+  author: "Peter Hessler"
+  device: "Mac"
+  tags: ["书摘", "非虚构"]
+
+- id: "memo-20241028-1"
+  date: "2024-10-28 20:06:29"
+  content: |
+    I almost never saw children. I knew they were up there: a game called Mini Table Football to 2703, a Huanqi toy box to 1804. The compound printed out documents on request and left them in the lobby, and I noticed homework assignments for kids who were attending online school: for 2102, a chapter on chemistry; for 3802, a handout on poems from the Northern and Southern dynasties.
+  source: "Other Rivers (page: 412)"
+  author: "Peter Hessler"
+  device: "Mac"
+  tags: ["书摘", "非虚构"]
+
+- id: "memo-20241020-2"
+  date: "2024-10-20 18:16:02"
+  content: |
+    和気藹々と二次会へ流れ去ろうとする人々の中にあって、私は彼女と私を結ぶ赤い糸が路上に落ちていないかどうか、鵜の目鷹の目で探していた。
+  source: "《夜は短し歩けよ乙女》 (page: 12)"
+  author: "森見登美彦"
+  device: "Mac"
+  tags: ["书摘", "日剧原著"]
+
+- id: "memo-20241020-1"
+  date: "2024-10-20 18:14:49"
+  content: |
+    “我们已经流了那么多血，怎么可以让这些鲜血白流！那些先走一步的灵魂，正瞪大眼睛看着我们啊……”
+
+    男子说话的尾音有点沙哑，不断听见“血”这个字，使你感到胸口一阵闷痛，于是再次张口深呼吸。
+
+    灵魂又没有躯体，要如何瞪大眼睛看着我们。
+  source: "《少年来了》 (page: 25)"
+  author: "韩江"
+  device: "Mac"
+  tags: ["书摘", "小说"]
+
+- id: "memo-20240515-2"
+  date: "2024-05-15 14:31:01"
+  content: |
+    为什么我们总是很想纪念自己？甚至在我们还活着的时候也是如此？我们希望表明我们的存在，就像狗在消防栓上撒尿一样。我们将照片装入相框挂起来，将我们的毕业文凭、镀银奖杯摆出来；我们在衣服上印上自己姓名的缩写，把我们的姓名刻在树上、涂在厕所的墙壁上。这都是出于同一种冲动。我们从中希望得到什么呢？掌声，嫉妒，还是尊敬？还是仅仅想得到任何一种形式的关注？
+
+    至少，我们需要有一个见证。我们不甘心我们自己的声音像收音机里的广播一样，慢慢低沉下去，直至消失。
+  source: "《盲刺客》"
+  author: "玛格丽特·阿特伍德"
+  device: "微信读书"
+  tags: ["书摘", "思考"]
+
+- id: "memo-20240515-1"
+  date: "2024-05-15 13:14:54"
+  content: |
+    君が為尽くす心は水的泡 消えにし後は澄み渡る空
+  source: "辞世の句"
+  author: "岡田以蔵"
+  device: "Mac"
+  tags: ["短句", "日本历史"]
+
+- id: "memo-20240401-1"
+  date: "2024-04-01 22:30:00"
+  content: |
+    博尔赫斯说：“如果有天堂，天堂应该是图书馆的模样。”
+    
+    在安静的夜里读几页书，把那些击中内心的词句写在这里，就像给未来的自己留下一把随时可以开启记忆的钥匙。
+  device: "iPhone"
+  tags: ["短句", "随感"]

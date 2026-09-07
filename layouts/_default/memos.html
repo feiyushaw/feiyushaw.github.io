@@ -1,0 +1,925 @@
+{{ define "main" }}
+{{ $memos := site.Data.memos }}
+{{ $authorImage := "/img/avatar.png" }}
+{{ with resources.Get (site.Params.author.image | default "img/avatar.png") }}
+  {{ $authorImage = .RelPermalink }}
+{{ else }}
+  {{ $authorImage = (site.Params.author.image | default "img/avatar.png") | relURL }}
+{{ end }}
+{{ $authorName := site.Params.author.name | default site.Title }}
+{{ $memosStyle := resources.Get "css/memos.css" }}
+{{ if $memosStyle }}
+  <style>{{ $memosStyle.Content | safeCSS }}</style>
+{{ end }}
+
+<div class="memos-container">
+  <!-- 页面头部 -->
+  <header class="memos-header">
+    <div class="memos-header__meta">
+      <h1 class="memos-title">{{ .Title }}</h1>
+      <p class="memos-subtitle">{{ .Params.description | default "记录即刻想法、书籍摘抄与吉光片羽" }}</p>
+    </div>
+    {{ with .Content }}
+    <div class="memos-intro prose dark:prose-invert">
+      {{ . }}
+    </div>
+    {{ end }}
+  </header>
+
+  <!-- 作者看板与统计卡片 -->
+  <section class="memos-profile-card" aria-label="Author Profile & Stats">
+    <div class="memos-profile-card__user">
+      <img src="{{ $authorImage | relURL }}" alt="{{ $authorName }}" class="memos-profile-card__avatar" style="width:52px;height:52px;border-radius:50%;object-fit:cover;" />
+      <div class="memos-profile-card__info">
+        <div class="memos-profile-card__name-row">
+          <span class="memos-profile-card__name">{{ $authorName }}</span>
+          <span class="memos-profile-card__badge">Live Feed</span>
+        </div>
+        <p class="memos-profile-card__bio">短句、书摘与即刻记录 · 自主可控的个人微语录</p>
+      </div>
+    </div>
+    
+    <div class="memos-profile-card__right">
+      <div class="memos-profile-card__stats">
+        <div class="memos-stat-item">
+          <span class="memos-stat-value" id="total-count">{{ len $memos }}</span>
+          <span class="memos-stat-label">条微语</span>
+        </div>
+        <div class="memos-stat-divider"></div>
+        <div class="memos-stat-item">
+          {{ $allTags := slice }}
+          {{ range $memos }}
+            {{ with .tags }}
+              {{ range . }}
+                {{ $allTags = $allTags | append . }}
+              {{ end }}
+            {{ end }}
+          {{ end }}
+          {{ $uniqueTags := $allTags | uniq }}
+          <span class="memos-stat-value">{{ len $uniqueTags }}</span>
+          <span class="memos-stat-label">个分类</span>
+        </div>
+      </div>
+
+      <!-- 在线发布与设置触发按钮 -->
+      <div class="memos-publish-actions">
+        <button type="button" class="memos-btn-publish" onclick="openPublishModal()" title="在线写微语">
+          <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none">
+            <path d="M12 20h9"></path>
+            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+          </svg>
+          <span>发微语</span>
+        </button>
+        <button type="button" class="memos-btn-config" onclick="openAuthModal()" title="发布授权与密码设置">
+          <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 搜索与标签过滤工具栏 -->
+  <section class="memos-toolbar" aria-label="Filter and Search">
+    <!-- 搜索框 -->
+    <div class="memos-search-box">
+      <svg class="memos-search-icon" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      <input type="text" id="memos-search-input" class="memos-search-input" placeholder="搜索微语、书摘或作者..." aria-label="Search memos" />
+      <button type="button" id="memos-search-clear" class="memos-search-clear" aria-label="Clear search" style="display: none;">&times;</button>
+    </div>
+
+    <!-- 标签过滤器 -->
+    {{ if gt (len $uniqueTags) 0 }}
+    <div class="memos-tags-bar" id="memos-tags-bar">
+      <button type="button" class="memos-tag-btn active" data-tag="all">全部 <span class="memos-tag-count">({{ len $memos }})</span></button>
+      {{ range $tag := $uniqueTags }}
+        {{ $count := 0 }}
+        {{ range $memos }}
+          {{ if and .tags (in .tags $tag) }}
+            {{ $count = add $count 1 }}
+          {{ end }}
+        {{ end }}
+        <button type="button" class="memos-tag-btn" data-tag="{{ $tag }}">{{ $tag }} <span class="memos-tag-count">({{ $count }})</span></button>
+      {{ end }}
+    </div>
+    {{ end }}
+  </section>
+
+  <!-- 微语时间轴/列表流 -->
+  <main class="memos-stream" id="memos-stream">
+    {{ if $memos }}
+      {{ range $index, $memo := $memos }}
+        {{ $id := .id | default (printf "memo-%d" $index) }}
+        {{ $tagsStr := "" }}
+        {{ with .tags }}
+          {{ $tagsStr = delimit . "," }}
+        {{ end }}
+
+        <article 
+          class="memo-card{{ if .pinned }} memo-card--pinned{{ end }}" 
+          id="{{ $id }}"
+          data-id="{{ $id }}"
+          data-tags="{{ $tagsStr }}"
+          data-search="{{ .content }} {{ .source }} {{ .author }} {{ $tagsStr }}">
+          
+          <!-- 左侧头像 -->
+          <div class="memo-card__avatar-col">
+            <img src="{{ $authorImage | relURL }}" alt="{{ $authorName }}" class="memo-card__avatar" style="width:40px;height:40px;border-radius:50%;object-fit:cover;" />
+            <div class="memo-card__line"></div>
+          </div>
+
+          <!-- 右侧内容主体 -->
+          <div class="memo-card__body">
+            <!-- 头部元数据 -->
+            <header class="memo-card__header">
+              <div class="memo-card__author-info">
+                <span class="memo-card__author-name">{{ $authorName }}</span>
+                {{ if .pinned }}
+                  <span class="memo-badge memo-badge--pinned">
+                    <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none">
+                      <line x1="12" y1="17" x2="12" y2="22"></line>
+                      <path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"></path>
+                    </svg>
+                    置顶
+                  </span>
+                {{ end }}
+              </div>
+
+              <div class="memo-card__meta-right">
+                {{ with .device }}
+                  <span class="memo-device" title="发布设备: {{ . }}">
+                    {{ if eq . "Mac" }}
+                      <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2" fill="none"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+                    {{ else if or (eq . "iPhone") (eq . "Mobile") (eq . "Android") }}
+                      <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2" fill="none"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+                    {{ else if or (eq . "微信读书") (eq . "Kindle") (eq . "读书") (eq . "手记") }}
+                      <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2" fill="none"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                    {{ else }}
+                      <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                    {{ end }}
+                    {{ . }}
+                  </span>
+                {{ end }}
+
+                {{ with .date }}
+                  <time class="memo-time" datetime="{{ . }}" title="{{ . }}">
+                    {{ . }}
+                  </time>
+                {{ end }}
+              </div>
+            </header>
+
+            <!-- 正文内容 (Markdown 渲染) -->
+            <div class="memo-card__content heti">
+              {{ .content | markdownify }}
+            </div>
+
+            <!-- 书摘/来源出处卡片 (如果有 source 或 author) -->
+            {{ if or .source .author }}
+              <div class="memo-source-card">
+                <div class="memo-source-card__icon">
+                  <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none">
+                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                  </svg>
+                </div>
+                <div class="memo-source-card__info">
+                  {{ with .source }}
+                    <span class="memo-source-card__title">{{ . }}</span>
+                  {{ end }}
+                  {{ with .author }}
+                    <span class="memo-source-card__author">/ {{ . }}</span>
+                  {{ end }}
+                </div>
+              </div>
+            {{ end }}
+
+            <!-- 配图展示 (如果有 images) -->
+            {{ with .images }}
+              <div class="memo-gallery memo-gallery--{{ len . }}">
+                {{ range . }}
+                  <div class="memo-gallery__item">
+                    <img src="{{ . | relURL }}" alt="配图" loading="lazy" class="memo-gallery__img" onclick="openLightbox(this.src)" />
+                  </div>
+                {{ end }}
+              </div>
+            {{ end }}
+
+            <!-- 底部：标签与快捷操作 -->
+            <footer class="memo-card__footer">
+              <div class="memo-card__tags">
+                {{ with .tags }}
+                  {{ range . }}
+                    <button type="button" class="memo-tag" onclick="filterByTag('{{ . }}')">#{{ . }}</button>
+                  {{ end }}
+                {{ end }}
+              </div>
+
+              <div class="memo-card__actions">
+                <!-- 复制文本按钮 -->
+                <button type="button" class="memo-action-btn" title="复制内容" onclick="copyMemoText(this, '{{ $id }}')" aria-label="Copy memo content">
+                  <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                  </svg>
+                  <span class="memo-action-text">复制</span>
+                </button>
+
+                <!-- 复制链接按钮 -->
+                <button type="button" class="memo-action-btn" title="复制直达链接" onclick="copyMemoLink(this, '{{ $id }}')" aria-label="Copy memo link">
+                  <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none">
+                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                  </svg>
+                  <span class="memo-action-text">链接</span>
+                </button>
+              </div>
+            </footer>
+          </div>
+        </article>
+      {{ end }}
+    {{ else }}
+      <div class="memos-empty">
+        <p>暂无微语记录，在 <code>data/memos.yaml</code> 中添加第一条书摘吧。</p>
+      </div>
+    {{ end }}
+
+    <!-- 筛选无结果提示 -->
+    <div class="memos-no-result" id="memos-no-result" style="display: none;">
+      <p>没有找到匹配的微语或书摘</p>
+      <button type="button" class="memos-reset-btn" onclick="resetFilters()">清除筛选条件</button>
+    </div>
+  </main>
+</div>
+
+<!-- ======================= 在线发布弹窗 Modal ======================= -->
+<div id="memos-publish-modal" class="memos-modal" style="display: none;" onclick="closeModalOnBackdrop(event, 'memos-publish-modal')">
+  <div class="memos-modal__dialog">
+    <div class="memos-modal__header">
+      <h3 class="memos-modal__title">发布新微语 / 书摘</h3>
+      <button type="button" class="memos-modal__close" onclick="closePublishModal()" aria-label="Close">&times;</button>
+    </div>
+
+    <form id="memos-publish-form" onsubmit="handlePublishSubmit(event)">
+      <div class="memos-form-group">
+        <label for="memo-input-content" class="memos-form-label">微语正文 / 摘录内容 <span class="required">*</span></label>
+        <textarea id="memo-input-content" class="memos-textarea" rows="4" placeholder="写下这一刻的想法、摘录或短句... (支持 Markdown)" required></textarea>
+      </div>
+
+      <div class="memos-form-row">
+        <div class="memos-form-group">
+          <label for="memo-input-source" class="memos-form-label">出处 / 书名 (选填)</label>
+          <input type="text" id="memo-input-source" class="memos-input" placeholder="例如: 《大师和玛格丽特》 (page: 12)" />
+        </div>
+        <div class="memos-form-group">
+          <label for="memo-input-author" class="memos-form-label">原作者 (选填)</label>
+          <input type="text" id="memo-input-author" class="memos-input" placeholder="例如: 布尔加科夫" />
+        </div>
+      </div>
+
+      <div class="memos-form-row">
+        <div class="memos-form-group">
+          <label for="memo-input-tags" class="memos-form-label">标签分类 (逗号分隔)</label>
+          <input type="text" id="memo-input-tags" class="memos-input" placeholder="例如: 书摘, 外国文学" />
+        </div>
+        <div class="memos-form-group">
+          <label for="memo-input-device" class="memos-form-label">发布设备 / 来源</label>
+          <input type="text" id="memo-input-device" class="memos-input" placeholder="例如: Mac / iPhone / 微信读书" />
+        </div>
+      </div>
+
+      <div class="memos-form-group">
+        <label for="memo-input-images" class="memos-form-label">配图链接 (选填，换行分隔)</label>
+        <textarea id="memo-input-images" class="memos-input" rows="2" placeholder="https://example.com/photo.jpg"></textarea>
+      </div>
+
+      <div class="memos-form-checkbox-row">
+        <label class="memos-checkbox-label">
+          <input type="checkbox" id="memo-input-pinned" />
+          <span>设为置顶微语</span>
+        </label>
+      </div>
+
+      <div class="memos-modal__footer">
+        <button type="button" class="memos-btn-secondary" onclick="openAuthModal()">🔑 凭证/密码设置</button>
+        <div class="memos-modal__footer-right">
+          <button type="button" class="memos-btn-cancel" onclick="closePublishModal()">取消</button>
+          <button type="submit" id="memos-btn-submit" class="memos-btn-primary">
+            <span>立即发布</span>
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ======================= 发布凭证与密码设置弹窗 ======================= -->
+<div id="memos-auth-modal" class="memos-modal" style="display: none;" onclick="closeModalOnBackdrop(event, 'memos-auth-modal')">
+  <div class="memos-modal__dialog">
+    <div class="memos-modal__header">
+      <h3 class="memos-modal__title">在线发布凭证设置</h3>
+      <button type="button" class="memos-modal__close" onclick="closeAuthModal()" aria-label="Close">&times;</button>
+    </div>
+
+    <form id="memos-auth-form" onsubmit="handleAuthSave(event)">
+      <div class="memos-auth-tip">
+        <p>💡 <b>发布原理</b>：在线发布将直接调用 GitHub API 更新仓库中的 <code>data/memos.yaml</code>，并自动触发 GitHub Actions 重新构建部署。凭证仅保存在您当前浏览器的本地 <code>localStorage</code> 中，不会上传到任何第三方。</p>
+      </div>
+
+      <div class="memos-form-group">
+        <label for="auth-repo" class="memos-form-label">GitHub 仓库 (Owner/Repo)</label>
+        <input type="text" id="auth-repo" class="memos-input" placeholder="例如: feiyushaw/feiyushaw.github.io" required />
+      </div>
+
+      <div class="memos-form-group">
+        <label for="auth-branch" class="memos-form-label">分支名称</label>
+        <input type="text" id="auth-branch" class="memos-input" placeholder="master" value="master" required />
+      </div>
+
+      <div class="memos-form-group">
+        <label for="auth-token" class="memos-form-label">GitHub Personal Access Token (PAT) <span class="required">*</span></label>
+        <input type="password" id="auth-token" class="memos-input" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" required />
+        <small class="memos-form-help">需要仓库的 <b>Contents: Read and write</b> 权限。<a href="https://github.com/settings/tokens?type=beta" target="_blank" rel="noopener">点击此处去 GitHub 创建 Token &rarr;</a></small>
+      </div>
+
+      <div class="memos-form-group">
+        <label for="auth-worker" class="memos-form-label">或者：自定义 Worker / API 端点 (选填)</label>
+        <input type="url" id="auth-worker" class="memos-input" placeholder="https://your-memos-api.workers.dev" />
+        <small class="memos-form-help">如果您部署了 Cloudflare Worker 代理，可在此填入 Worker URL。</small>
+      </div>
+
+      <div class="memos-modal__footer">
+        <button type="button" class="memos-btn-danger" onclick="clearAuthCredentials()">清除已存凭证</button>
+        <div class="memos-modal__footer-right">
+          <button type="button" class="memos-btn-cancel" onclick="closeAuthModal()">取消</button>
+          <button type="submit" class="memos-btn-primary">保存凭证</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- 轻量级图片灯箱弹窗 -->
+<div id="memos-lightbox" class="memos-lightbox" onclick="closeLightbox(event)" style="display: none;">
+  <div class="memos-lightbox__content">
+    <img id="memos-lightbox-img" src="" alt="放大预览" />
+    <button type="button" class="memos-lightbox__close" onclick="closeLightbox(event)" aria-label="Close lightbox">&times;</button>
+  </div>
+</div>
+
+<!-- 吐司提示组件 -->
+<div id="memos-toast" class="memos-toast"></div>
+
+<!-- 页面交互与在线发布脚本 -->
+<script>
+(function() {
+  const searchInput = document.getElementById('memos-search-input');
+  const searchClear = document.getElementById('memos-search-clear');
+  const tagButtons = document.querySelectorAll('.memos-tag-btn');
+  const cards = document.querySelectorAll('.memo-card');
+  const noResult = document.getElementById('memos-no-result');
+  const totalCountEl = document.getElementById('total-count');
+
+  let currentTag = 'all';
+  let currentQuery = '';
+
+  function updateDisplay() {
+    let visibleCount = 0;
+    const query = currentQuery.toLowerCase().trim();
+
+    cards.forEach(card => {
+      const cardTags = (card.getAttribute('data-tags') || '').split(',');
+      const searchData = (card.getAttribute('data-search') || '').toLowerCase();
+
+      const matchTag = currentTag === 'all' || cardTags.includes(currentTag);
+      const matchSearch = !query || searchData.includes(query);
+
+      if (matchTag && matchSearch) {
+        card.style.display = 'flex';
+        visibleCount++;
+      } else {
+        card.style.display = 'none';
+      }
+    });
+
+    if (noResult) {
+      noResult.style.display = visibleCount === 0 ? 'block' : 'none';
+    }
+
+    if (totalCountEl) {
+      totalCountEl.textContent = visibleCount;
+    }
+  }
+
+  // 标签点击事件
+  tagButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      tagButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentTag = btn.getAttribute('data-tag');
+      updateDisplay();
+    });
+  });
+
+  // 搜索输入事件：输入搜索词时自动切回全局搜索体验
+  if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+      currentQuery = e.target.value;
+      if (searchClear) {
+        searchClear.style.display = currentQuery ? 'block' : 'none';
+      }
+      if (currentQuery && currentTag !== 'all') {
+        currentTag = 'all';
+        tagButtons.forEach(b => {
+          if (b.getAttribute('data-tag') === 'all') b.classList.add('active');
+          else b.classList.remove('active');
+        });
+      }
+      updateDisplay();
+    });
+  }
+
+  // 清空搜索
+  if (searchClear) {
+    searchClear.addEventListener('click', () => {
+      searchInput.value = '';
+      currentQuery = '';
+      searchClear.style.display = 'none';
+      updateDisplay();
+      searchInput.focus();
+    });
+  }
+
+  // 暴露给全局的函数
+  window.filterByTag = function(tag) {
+    tagButtons.forEach(btn => {
+      if (btn.getAttribute('data-tag') === tag) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
+    currentTag = tag;
+    updateDisplay();
+    window.scrollTo({ top: document.querySelector('.memos-toolbar').offsetTop - 80, behavior: 'smooth' });
+  };
+
+  window.resetFilters = function() {
+    currentTag = 'all';
+    currentQuery = '';
+    if (searchInput) searchInput.value = '';
+    if (searchClear) searchClear.style.display = 'none';
+    tagButtons.forEach(b => {
+      if (b.getAttribute('data-tag') === 'all') b.classList.add('active');
+      else b.classList.remove('active');
+    });
+    updateDisplay();
+  };
+
+  // 复制文本
+  window.copyMemoText = function(btn, id) {
+    const card = document.getElementById(id);
+    if (!card) return;
+    const content = card.querySelector('.memo-card__content');
+    const source = card.querySelector('.memo-source-card');
+    
+    let text = content ? content.innerText.trim() : '';
+    if (source) {
+      text += '\n\n' + source.innerText.trim();
+    }
+
+    navigator.clipboard.writeText(text).then(() => {
+      showToast('已复制内容到剪贴板');
+    }).catch(() => {
+      showToast('复制失败，请手动选择复制');
+    });
+  };
+
+  // 复制链接
+  window.copyMemoLink = function(btn, id) {
+    const url = window.location.origin + window.location.pathname + '#' + id;
+    navigator.clipboard.writeText(url).then(() => {
+      showToast('已复制微语链接');
+    }).catch(() => {
+      showToast('复制失败');
+    });
+  };
+
+  // 吐司提示
+  function showToast(msg) {
+    const toast = document.getElementById('memos-toast');
+    if (!toast) return;
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => {
+      toast.classList.remove('show');
+    }, 2800);
+  }
+  window.showToast = showToast;
+
+  // 图片灯箱
+  window.openLightbox = function(src) {
+    const lb = document.getElementById('memos-lightbox');
+    const img = document.getElementById('memos-lightbox-img');
+    if (lb && img) {
+      img.src = src;
+      lb.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    }
+  };
+
+  window.closeLightbox = function(e) {
+    if (e.target.id === 'memos-lightbox' || e.target.classList.contains('memos-lightbox__close') || e.target.id === 'memos-lightbox-img') {
+      const lb = document.getElementById('memos-lightbox');
+      if (lb) {
+        lb.style.display = 'none';
+        document.body.style.overflow = '';
+      }
+    }
+  };
+
+  // 模态弹窗控制
+  window.openPublishModal = function() {
+    const modal = document.getElementById('memos-publish-modal');
+    if (modal) {
+      // 自动侦测并填充当前设备
+      const deviceInput = document.getElementById('memo-input-device');
+      if (deviceInput && !deviceInput.value) {
+        const ua = navigator.userAgent;
+        if (/iPhone/i.test(ua)) deviceInput.value = 'iPhone';
+        else if (/iPad/i.test(ua)) deviceInput.value = 'iPad';
+        else if (/Macintosh|Mac OS/i.test(ua)) deviceInput.value = 'Mac';
+        else if (/Android/i.test(ua)) deviceInput.value = 'Android';
+        else if (/Windows/i.test(ua)) deviceInput.value = 'Windows';
+        else deviceInput.value = 'Web';
+      }
+      modal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+      setTimeout(() => document.getElementById('memo-input-content')?.focus(), 100);
+    }
+  };
+
+  window.closePublishModal = function() {
+    const modal = document.getElementById('memos-publish-modal');
+    if (modal) {
+      modal.style.display = 'none';
+      document.body.style.overflow = '';
+    }
+  };
+
+  window.openAuthModal = function() {
+    const modal = document.getElementById('memos-auth-modal');
+    if (modal) {
+      const cfg = getStoredAuthConfig();
+      document.getElementById('auth-repo').value = cfg.repo || 'feiyushaw/feiyushaw.github.io';
+      document.getElementById('auth-branch').value = cfg.branch || 'master';
+      document.getElementById('auth-token').value = cfg.token || '';
+      document.getElementById('auth-worker').value = cfg.worker || '';
+      modal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    }
+  };
+
+  window.closeAuthModal = function() {
+    const modal = document.getElementById('memos-auth-modal');
+    if (modal) {
+      modal.style.display = 'none';
+      document.body.style.overflow = '';
+    }
+  };
+
+  window.closeModalOnBackdrop = function(e, modalId) {
+    if (e.target.id === modalId) {
+      document.getElementById(modalId).style.display = 'none';
+      document.body.style.overflow = '';
+    }
+  };
+
+  // 本地凭证管理
+  function getStoredAuthConfig() {
+    try {
+      const data = localStorage.getItem('memos_auth_config');
+      return data ? JSON.parse(data) : {};
+    } catch(e) {
+      return {};
+    }
+  }
+
+  window.handleAuthSave = function(e) {
+    e.preventDefault();
+    const repo = document.getElementById('auth-repo').value.trim();
+    const branch = document.getElementById('auth-branch').value.trim() || 'master';
+    const token = document.getElementById('auth-token').value.trim();
+    const worker = document.getElementById('auth-worker').value.trim();
+
+    if (!token && !worker) {
+      alert('请至少填写 GitHub Token 或 Worker 端点');
+      return;
+    }
+
+    const cfg = { repo, branch, token, worker };
+    localStorage.setItem('memos_auth_config', JSON.stringify(cfg));
+    showToast('发布凭证已安全保存到本地浏览器');
+    closeAuthModal();
+  };
+
+  window.clearAuthCredentials = function() {
+    if (confirm('确定清除本地已保存的发布凭证吗？')) {
+      localStorage.removeItem('memos_auth_config');
+      document.getElementById('auth-token').value = '';
+      showToast('凭证已清除');
+      closeAuthModal();
+    }
+  };
+
+  // 格式化当前时间 YYYY-MM-DD HH:mm:ss
+  function formatNow() {
+    const now = new Date();
+    const y = now.getFullYear();
+    const m = String(now.getMonth() + 1).padStart(2, '0');
+    const d = String(now.getDate()).padStart(2, '0');
+    const hh = String(now.getHours()).padStart(2, '0');
+    const mm = String(now.getMinutes()).padStart(2, '0');
+    const ss = String(now.getSeconds()).padStart(2, '0');
+    return `${y}-${m}-${d} ${hh}:${mm}:${ss}`;
+  }
+
+  // 生成唯一 ID
+  function generateId() {
+    const now = new Date();
+    const y = now.getFullYear();
+    const m = String(now.getMonth() + 1).padStart(2, '0');
+    const d = String(now.getDate()).padStart(2, '0');
+    const rand = Math.floor(1000 + Math.random() * 9000);
+    return `memo-${y}${m}${d}-${rand}`;
+  }
+
+  // 提交发布逻辑 (直接通过 GitHub Contents API 更新 data/memos.yaml)
+  window.handlePublishSubmit = async function(e) {
+    e.preventDefault();
+    const auth = getStoredAuthConfig();
+
+    if (!auth.token && !auth.worker) {
+      alert('检测到您尚未配置发布口令或 GitHub Token，请先完成凭证设置。');
+      openAuthModal();
+      return;
+    }
+
+    const content = document.getElementById('memo-input-content').value.trim();
+    const source = document.getElementById('memo-input-source').value.trim();
+    const author = document.getElementById('memo-input-author').value.trim();
+    const tagsStr = document.getElementById('memo-input-tags').value.trim();
+    const device = document.getElementById('memo-input-device').value.trim();
+    const imagesStr = document.getElementById('memo-input-images').value.trim();
+    const pinned = document.getElementById('memo-input-pinned').checked;
+
+    if (!content) {
+      alert('请填写微语正文内容');
+      return;
+    }
+
+    const tags = tagsStr ? tagsStr.split(/[,，\s]+/).filter(Boolean) : [];
+    const images = imagesStr ? imagesStr.split('\n').map(s => s.trim()).filter(Boolean) : [];
+    const nowStr = formatNow();
+    const memoId = generateId();
+
+    const submitBtn = document.getElementById('memos-btn-submit');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span>发布中...</span>';
+
+    try {
+      // 构造新条目的 YAML 格式文本
+      let newYamlEntry = `\n- id: "${memoId}"\n  date: "${nowStr}"\n`;
+      if (pinned) newYamlEntry += `  pinned: true\n`;
+      
+      // 正文多行缩进处理
+      const contentLines = content.split('\n');
+      if (contentLines.length > 1) {
+        newYamlEntry += `  content: |\n`;
+        contentLines.forEach(line => {
+          newYamlEntry += `    ${line}\n`;
+        });
+      } else {
+        newYamlEntry += `  content: "${content.replace(/"/g, '\\"')}"\n`;
+      }
+
+      if (source) newYamlEntry += `  source: "${source.replace(/"/g, '\\"')}"\n`;
+      if (author) newYamlEntry += `  author: "${author.replace(/"/g, '\\"')}"\n`;
+      if (device) newYamlEntry += `  device: "${device}"\n`;
+      if (tags.length > 0) newYamlEntry += `  tags: [${tags.map(t => `"${t}"`).join(', ')}]\n`;
+      if (images.length > 0) {
+        newYamlEntry += `  images:\n`;
+        images.forEach(img => {
+          newYamlEntry += `    - "${img}"\n`;
+        });
+      }
+
+      if (auth.token) {
+        // 直连 GitHub API 提交
+        const repo = auth.repo || 'feiyushaw/feiyushaw.github.io';
+        const branch = auth.branch || 'master';
+        const filePath = 'data/memos.yaml';
+        const getUrl = `https://api.github.com/repos/${repo}/contents/${filePath}?ref=${branch}`;
+
+        const getRes = await fetch(getUrl, {
+          headers: {
+            'Authorization': `Bearer ${auth.token}`,
+            'Accept': 'application/vnd.github.v3+json'
+          }
+        });
+
+        let fileSha = undefined;
+        let currentContent = '';
+
+        if (getRes.status === 200) {
+          const fileData = await getRes.json();
+          fileSha = fileData.sha;
+          currentContent = decodeURIComponent(escape(atob(fileData.content.replace(/\n/g, ''))));
+        } else if (getRes.status === 404) {
+          // 远端文件尚未存在时，作为新文件创建
+          currentContent = '# ==============================================================================\n# 微语 / 书摘 / 个人推特数据源 (Memos & Quotes)\n# ==============================================================================\n';
+        } else {
+          throw new Error(`连接 GitHub 仓库失败 (${getRes.status}): 请检查 Token 权限是否包含 Contents (Read and write) 及仓库名。`);
+        }
+        
+        // 在现存文件头部插入新条目（保留注释头）
+        const headerEndMatch = currentContent.match(/# ===+\n/);
+        let updatedContent = '';
+        if (headerEndMatch) {
+          const splitIdx = headerEndMatch.index + headerEndMatch[0].length;
+          updatedContent = currentContent.slice(0, splitIdx) + newYamlEntry + currentContent.slice(splitIdx);
+        } else {
+          updatedContent = newYamlEntry + '\n' + currentContent;
+        }
+
+        const putPayload = {
+          message: `feat(memos): add new memo ${memoId}`,
+          content: btoa(unescape(encodeURIComponent(updatedContent))),
+          branch: branch
+        };
+        if (fileSha) {
+          putPayload.sha = fileSha;
+        }
+
+        const putRes = await fetch(getUrl, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${auth.token}`,
+            'Accept': 'application/vnd.github.v3+json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(putPayload)
+        });
+
+        if (!putRes.ok) {
+          const errData = await putRes.json();
+          throw new Error(`提交失败 (${putRes.status}): ${errData.message || putRes.statusText}`);
+        }
+      } else if (auth.worker) {
+        // 自定义 Worker 模式
+        const workerRes = await fetch(auth.worker, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            content, source, author, tags, device, images, pinned, date: nowStr, id: memoId
+          })
+        });
+        if (!workerRes.ok) {
+          throw new Error(`Worker 响应异常: ${workerRes.statusText}`);
+        }
+      }
+
+      // 乐观 UI 更新：在前端即时插入卡片
+      insertOptimisticCard({
+        id: memoId,
+        date: nowStr,
+        content: content,
+        source: source,
+        author: author,
+        tags: tags,
+        device: device,
+        images: images,
+        pinned: pinned
+      });
+
+      showToast('🎉 发布成功！已同步至 GitHub，正在自动构建部署');
+      document.getElementById('memos-publish-form').reset();
+      closePublishModal();
+
+    } catch (err) {
+      alert(`发布遇到错误: ${err.message}`);
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = originalText;
+    }
+  };
+
+  // 乐观更新卡片插入
+  function insertOptimisticCard(data) {
+    const stream = document.getElementById('memos-stream');
+    if (!stream) return;
+
+    const card = document.createElement('article');
+    card.className = 'memo-card' + (data.pinned ? ' memo-card--pinned' : '') + ' memo-card--highlight';
+    card.id = data.id;
+    card.setAttribute('data-id', data.id);
+    card.setAttribute('data-tags', data.tags.join(','));
+    card.setAttribute('data-search', `${data.content} ${data.source || ''} ${data.author || ''} ${data.tags.join(',')}`);
+
+    let sourceHtml = '';
+    if (data.source || data.author) {
+      sourceHtml = `
+        <div class="memo-source-card">
+          <div class="memo-source-card__icon">
+            <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+          </div>
+          <div class="memo-source-card__info">
+            ${data.source ? `<span class="memo-source-card__title">${escapeHtml(data.source)}</span>` : ''}
+            ${data.author ? `<span class="memo-source-card__author">/ ${escapeHtml(data.author)}</span>` : ''}
+          </div>
+        </div>
+      `;
+    }
+
+    let tagsHtml = data.tags.map(t => `<button type="button" class="memo-tag" onclick="filterByTag('${t}')">#${t}</button>`).join(' ');
+
+    card.innerHTML = `
+      <div class="memo-card__avatar-col">
+        <img src="${document.querySelector('.memos-profile-card__avatar')?.src || '/img/avatar.png'}" alt="Avatar" class="memo-card__avatar" style="width:40px;height:40px;border-radius:50%;object-fit:cover;" />
+        <div class="memo-card__line"></div>
+      </div>
+      <div class="memo-card__body">
+        <header class="memo-card__header">
+          <div class="memo-card__author-info">
+            <span class="memo-card__author-name">${document.querySelector('.memos-profile-card__name')?.textContent || 'Author'}</span>
+            ${data.pinned ? '<span class="memo-badge memo-badge--pinned">置顶</span>' : ''}
+          </div>
+          <div class="memo-card__meta-right">
+            ${data.device ? `<span class="memo-device">${data.device}</span>` : ''}
+            <time class="memo-time" datetime="${data.date}">${data.date}</time>
+          </div>
+        </header>
+        <div class="memo-card__content heti">
+          ${data.content.split('\n').filter(Boolean).map(p => `<p>${escapeHtml(p)}</p>`).join('')}
+        </div>
+        ${sourceHtml}
+        <footer class="memo-card__footer">
+          <div class="memo-card__tags">${tagsHtml}</div>
+          <div class="memo-card__actions">
+            <button type="button" class="memo-action-btn" onclick="copyMemoText(this, '${data.id}')"><span class="memo-action-text">复制</span></button>
+            <button type="button" class="memo-action-btn" onclick="copyMemoLink(this, '${data.id}')"><span class="memo-action-text">链接</span></button>
+          </div>
+        </footer>
+      </div>
+    `;
+
+    stream.insertBefore(card, stream.firstChild);
+    const countEl = document.getElementById('total-count');
+    if (countEl) {
+      countEl.textContent = parseInt(countEl.textContent || '0') + 1;
+    }
+  }
+
+  function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      const lb = document.getElementById('memos-lightbox');
+      if (lb && lb.style.display === 'flex') {
+        lb.style.display = 'none';
+        document.body.style.overflow = '';
+      }
+      closePublishModal();
+      closeAuthModal();
+    }
+    // 快捷键 Cmd/Ctrl + K 打开写说说
+    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      e.preventDefault();
+      openPublishModal();
+    }
+  });
+
+  // 处理 URL 中的 Hash 锚点自动滚动和高亮
+  if (window.location.hash) {
+    const targetId = window.location.hash.substring(1);
+    const targetCard = document.getElementById(targetId);
+    if (targetCard) {
+      setTimeout(() => {
+        targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        targetCard.classList.add('memo-card--highlight');
+        setTimeout(() => targetCard.classList.remove('memo-card--highlight'), 2000);
+      }, 300);
+    }
+  }
+})();
+</script>
+{{ end }}

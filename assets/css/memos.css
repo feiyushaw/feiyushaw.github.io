@@ -1,0 +1,999 @@
+/* ==============================================================================
+   微语 / 书摘 / Memos 页面专属样式 (Editorial & Modern Microblog System)
+   ============================================================================== */
+
+:root {
+  --memo-paper: var(--editorial-paper, var(--background-color, #f7f6f2));
+  --memo-surface: var(--editorial-surface, var(--card-background, #ffffff));
+  --memo-ink: var(--editorial-ink, var(--text-color, #292929));
+  --memo-muted: var(--editorial-muted, var(--text-secondary, #747474));
+  --memo-faint: var(--editorial-faint, var(--muted-color, #a2a09a));
+  --memo-accent: var(--editorial-accent, var(--primary-color, #465a7a));
+  --memo-line: var(--editorial-line, var(--border-color, #e5e2db));
+  --memo-code: var(--editorial-code, var(--code-bg, #f4f2ec));
+}
+
+.dark {
+  --memo-paper: var(--editorial-paper, var(--background-color, #20201e));
+  --memo-surface: var(--editorial-surface, var(--card-background, #272724));
+  --memo-ink: var(--editorial-ink, var(--text-color, #eceae4));
+  --memo-muted: var(--editorial-muted, var(--text-secondary, #aaa79f));
+  --memo-faint: var(--editorial-faint, var(--muted-color, #85827b));
+  --memo-accent: var(--editorial-accent, var(--primary-color, #9aaac6));
+  --memo-line: var(--editorial-line, var(--border-color, #3c3b37));
+  --memo-code: var(--editorial-code, var(--code-bg, #2c2b28));
+}
+
+.memos-container {
+  width: min(100%, 780px);
+  margin-inline: auto;
+  padding: 2.2rem 0.5rem 4rem;
+  font-family: 'Commissioner', 'FangZhengShuSong', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* 页面头部 */
+.memos-header {
+  margin-bottom: 2rem;
+  border-bottom: 1px solid var(--memo-line);
+  padding-bottom: 1.5rem;
+}
+
+.memos-title {
+  font-size: clamp(2.2rem, 4.5vw, 3.2rem);
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  color: var(--memo-ink) !important;
+  margin: 0 0 0.5rem;
+  font-family: 'FangZhengShuSong', 'HanaMinA', 'Fraunces', Georgia, serif;
+}
+
+.memos-subtitle {
+  font-size: 0.95rem;
+  color: var(--memo-muted);
+  margin: 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  letter-spacing: 0.02em;
+}
+
+.memos-intro {
+  margin-top: 1rem;
+  font-size: 0.96rem;
+  line-height: 1.7;
+  color: var(--memo-ink);
+}
+
+/* 作者看板与统计卡片 */
+.memos-profile-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  padding: 1.25rem 1.5rem;
+  background-color: var(--memo-surface);
+  border: 1px solid var(--memo-line);
+  border-radius: 8px;
+  margin-bottom: 2rem;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.memos-profile-card__user {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.memos-profile-card__avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--memo-line);
+  background-color: var(--memo-paper);
+}
+
+.memos-profile-card__info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.memos-profile-card__name-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.memos-profile-card__name {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--memo-ink);
+}
+
+.memos-profile-card__badge {
+  font-size: 0.68rem;
+  padding: 0.15rem 0.45rem;
+  background-color: rgba(70, 90, 122, 0.12);
+  color: var(--memo-accent);
+  border-radius: 9999px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-weight: 500;
+}
+
+.dark .memos-profile-card__badge {
+  background-color: rgba(154, 170, 198, 0.18);
+}
+
+.memos-profile-card__bio {
+  font-size: 0.82rem;
+  color: var(--memo-muted);
+  margin: 0;
+}
+
+.memos-profile-card__stats {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.memos-stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.memos-stat-value {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--memo-ink);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  line-height: 1.2;
+}
+
+.memos-stat-label {
+  font-size: 0.75rem;
+  color: var(--memo-muted);
+}
+
+.memos-stat-divider {
+  width: 1px;
+  height: 28px;
+  background-color: var(--memo-line);
+}
+
+/* 工具栏：搜索与标签 */
+.memos-toolbar {
+  margin-bottom: 2.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.memos-search-box {
+  position: relative;
+  width: 100%;
+}
+
+.memos-search-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--memo-muted);
+  pointer-events: none;
+}
+
+.memos-search-input {
+  width: 100%;
+  padding: 0.75rem 2.4rem 0.75rem 2.6rem;
+  background-color: var(--memo-surface);
+  border: 1px solid var(--memo-line);
+  border-radius: 6px;
+  color: var(--memo-ink);
+  font-size: 0.92rem;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  font-family: inherit;
+}
+
+.memos-search-input:focus {
+  border-color: var(--memo-accent);
+  box-shadow: 0 0 0 3px rgba(70, 90, 122, 0.12);
+}
+
+.memos-search-clear {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  color: var(--memo-muted);
+  cursor: pointer;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+}
+
+.memos-search-clear:hover {
+  color: var(--memo-ink);
+}
+
+.memos-tags-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.memos-tag-btn {
+  padding: 0.35rem 0.8rem;
+  font-size: 0.82rem;
+  background-color: var(--memo-surface);
+  border: 1px solid var(--memo-line);
+  color: var(--memo-muted);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  font-family: inherit;
+}
+
+.memos-tag-btn:hover {
+  border-color: var(--memo-accent);
+  color: var(--memo-ink);
+}
+
+.memos-tag-btn.active {
+  background-color: var(--memo-accent);
+  border-color: var(--memo-accent);
+  color: #ffffff !important;
+  font-weight: 500;
+}
+
+.dark .memos-tag-btn.active {
+  color: #1a1a18 !important;
+}
+
+.memos-tag-count {
+  font-size: 0.75rem;
+  opacity: 0.8;
+  font-family: ui-monospace, SFMono-Regular, monospace;
+}
+
+/* 微语时间轴/列表流 */
+.memos-stream {
+  display: flex;
+  flex-direction: column;
+  gap: 1.8rem;
+  position: relative;
+}
+
+/* 单条卡片 */
+.memo-card {
+  display: flex;
+  gap: 1.25rem;
+  position: relative;
+  transition: transform 0.2s ease;
+}
+
+.memo-card--highlight {
+  animation: memoHighlight 2s ease;
+}
+
+@keyframes memoHighlight {
+  0% { transform: scale(1.02); }
+  50% { background-color: rgba(70, 90, 122, 0.08); border-radius: 8px; }
+  100% { transform: scale(1); }
+}
+
+.memo-card__avatar-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.memo-card__avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--memo-line);
+  background-color: var(--memo-surface);
+  z-index: 1;
+}
+
+.memo-card__line {
+  flex-grow: 1;
+  width: 1px;
+  background-color: var(--memo-line);
+  margin-top: 0.5rem;
+}
+
+.memo-card:last-child .memo-card__line {
+  display: none;
+}
+
+.memo-card__body {
+  flex-grow: 1;
+  background-color: var(--memo-surface);
+  border: 1px solid var(--memo-line);
+  border-radius: 8px;
+  padding: 1.25rem 1.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.memo-card:hover .memo-card__body {
+  border-color: var(--memo-faint);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+.memo-card--pinned .memo-card__body {
+  border-left: 3px solid var(--memo-accent);
+}
+
+/* 卡片头部 */
+.memo-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  border-bottom: 1px dashed var(--memo-line);
+  padding-bottom: 0.65rem;
+}
+
+.memo-card__author-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.memo-card__author-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--memo-ink);
+}
+
+.memo-badge--pinned {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.7rem;
+  padding: 0.1rem 0.4rem;
+  background-color: rgba(70, 90, 122, 0.1);
+  color: var(--memo-accent);
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.memo-card__meta-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.memo-device {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.76rem;
+  color: var(--memo-muted);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.memo-time {
+  font-size: 0.78rem;
+  color: var(--memo-faint);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  white-space: nowrap;
+}
+
+/* 卡片正文 */
+.memo-card__content {
+  font-size: 0.98rem;
+  line-height: 1.85;
+  color: var(--memo-ink);
+  word-break: break-word;
+}
+
+.memo-card__content p {
+  margin: 0 0 0.75rem;
+}
+
+.memo-card__content p:last-child {
+  margin-bottom: 0;
+}
+
+.memo-card__content a {
+  color: var(--memo-accent) !important;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.memo-card__content blockquote {
+  border-left: 3px solid var(--memo-line);
+  padding-left: 0.9rem;
+  color: var(--memo-muted);
+  margin: 0.6rem 0;
+  font-style: italic;
+}
+
+.memo-card__content code {
+  background-color: var(--memo-code);
+  padding: 0.15rem 0.35rem;
+  border-radius: 4px;
+  font-size: 0.88em;
+  font-family: ui-monospace, SFMono-Regular, monospace;
+}
+
+/* 书摘/引用来源卡片 */
+.memo-source-card {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.65rem 0.9rem;
+  background-color: var(--memo-code);
+  border-left: 3px solid var(--memo-accent);
+  border-radius: 0 6px 6px 0;
+  margin-top: 0.2rem;
+  font-size: 0.86rem;
+}
+
+.memo-source-card__icon {
+  color: var(--memo-accent);
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.memo-source-card__info {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.memo-source-card__title {
+  font-weight: 600;
+  color: var(--memo-ink);
+  font-family: 'FangZhengShuSong', 'HanaMinA', 'Fraunces', Georgia, serif;
+}
+
+.memo-source-card__author {
+  color: var(--memo-muted);
+}
+
+/* 配图画廊 */
+.memo-gallery {
+  display: grid;
+  gap: 0.5rem;
+  margin-top: 0.3rem;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.memo-gallery--1 {
+  grid-template-columns: minmax(0, 1fr);
+  max-width: 360px;
+}
+
+.memo-gallery--2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.memo-gallery--3,
+.memo-gallery--4,
+.memo-gallery--5,
+.memo-gallery--6 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.memo-gallery__item {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background-color: var(--memo-paper);
+  border-radius: 4px;
+}
+
+.memo-gallery--1 .memo-gallery__item {
+  aspect-ratio: auto;
+  max-height: 280px;
+}
+
+.memo-gallery__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  cursor: zoom-in;
+  transition: transform 0.25s ease;
+}
+
+.memo-gallery__img:hover {
+  transform: scale(1.03);
+}
+
+/* 底部：标签与操作 */
+.memo-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  padding-top: 0.6rem;
+  border-top: 1px dashed var(--memo-line);
+  font-size: 0.8rem;
+}
+
+.memo-card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.memo-tag {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 0.8rem;
+  color: var(--memo-accent);
+  cursor: pointer;
+  opacity: 0.85;
+  transition: opacity 0.15s ease, text-decoration 0.15s ease;
+}
+
+.memo-tag:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+.memo-card__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-left: auto;
+}
+
+.memo-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: none;
+  border: none;
+  padding: 0.2rem 0.4rem;
+  font-size: 0.78rem;
+  color: var(--memo-muted);
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+}
+
+.memo-action-btn:hover {
+  color: var(--memo-ink);
+  background-color: var(--memo-code);
+}
+
+/* 空状态与无结果提示 */
+.memos-empty,
+.memos-no-result {
+  text-align: center;
+  padding: 3rem 1.5rem;
+  background-color: var(--memo-surface);
+  border: 1px dashed var(--memo-line);
+  border-radius: 8px;
+  color: var(--memo-muted);
+}
+
+.memos-reset-btn {
+  margin-top: 1rem;
+  padding: 0.45rem 1rem;
+  background-color: var(--memo-accent);
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.dark .memos-reset-btn {
+  color: #1a1a18;
+}
+
+/* 图片灯箱 (Lightbox) */
+.memos-lightbox {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  cursor: zoom-out;
+}
+
+.memos-lightbox__content {
+  position: relative;
+  max-width: 90vw;
+  max-height: 90vh;
+}
+
+.memos-lightbox__content img {
+  max-width: 100%;
+  max-height: 85vh;
+  object-fit: contain;
+  border-radius: 6px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.memos-lightbox__close {
+  position: absolute;
+  top: -2.5rem;
+  right: 0;
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: 2rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0.2rem 0.5rem;
+}
+
+/* 吐司提示 (Toast) */
+.memos-toast {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(30px);
+  background-color: var(--memo-ink);
+  color: var(--memo-paper);
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  font-size: 0.88rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  z-index: 10000;
+  white-space: nowrap;
+}
+
+.memos-toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+/* 头部卡片操作区与发布按钮 */
+.memos-profile-card__right {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.memos-publish-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.memos-btn-publish {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.9rem;
+  background-color: var(--memo-accent);
+  color: #ffffff !important;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.2s ease, transform 0.15s ease;
+  font-family: inherit;
+}
+
+.dark .memos-btn-publish {
+  color: #1a1a18 !important;
+}
+
+.memos-btn-publish:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.memos-btn-config {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background-color: var(--memo-paper);
+  border: 1px solid var(--memo-line);
+  color: var(--memo-muted);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.memos-btn-config:hover {
+  color: var(--memo-ink);
+  border-color: var(--memo-accent);
+}
+
+/* ================= 模态弹窗系统 (Modal) ================= */
+.memos-modal {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+  z-index: 9998;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.memos-modal__dialog {
+  background-color: var(--memo-surface);
+  border: 1px solid var(--memo-line);
+  border-radius: 10px;
+  width: min(100%, 560px);
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 1.5rem 1.6rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  animation: modalSlideDown 0.2s ease;
+}
+
+@keyframes modalSlideDown {
+  from { opacity: 0; transform: translateY(-12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.memos-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--memo-line);
+  padding-bottom: 0.8rem;
+}
+
+.memos-modal__title {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--memo-ink);
+  margin: 0;
+}
+
+.memos-modal__close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: var(--memo-muted);
+  cursor: pointer;
+  padding: 0 0.3rem;
+}
+
+.memos-modal__close:hover {
+  color: var(--memo-ink);
+}
+
+/* 表单控件 */
+.memos-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 0.9rem;
+}
+
+.memos-form-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.8rem;
+}
+
+.memos-form-label {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--memo-ink);
+}
+
+.memos-form-label .required {
+  color: #e06c75;
+}
+
+.memos-input,
+.memos-textarea {
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  background-color: var(--memo-paper);
+  border: 1px solid var(--memo-line);
+  border-radius: 6px;
+  color: var(--memo-ink);
+  font-size: 0.9rem;
+  outline: none;
+  font-family: inherit;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.memos-input:focus,
+.memos-textarea:focus {
+  border-color: var(--memo-accent);
+  box-shadow: 0 0 0 3px rgba(70, 90, 122, 0.12);
+}
+
+.memos-textarea {
+  resize: vertical;
+  min-height: 90px;
+  line-height: 1.6;
+}
+
+.memos-form-help {
+  font-size: 0.75rem;
+  color: var(--memo-muted);
+  line-height: 1.4;
+}
+
+.memos-form-help a {
+  color: var(--memo-accent) !important;
+  text-decoration: underline;
+}
+
+.memos-auth-tip {
+  padding: 0.75rem 0.9rem;
+  background-color: rgba(70, 90, 122, 0.08);
+  border-left: 3px solid var(--memo-accent);
+  border-radius: 4px;
+  font-size: 0.82rem;
+  color: var(--memo-ink);
+  line-height: 1.6;
+}
+
+.memos-auth-tip p {
+  margin: 0;
+}
+
+.memos-form-checkbox-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.memos-checkbox-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  color: var(--memo-ink);
+  cursor: pointer;
+}
+
+/* 弹窗底部按钮 */
+.memos-modal__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  border-top: 1px solid var(--memo-line);
+  padding-top: 1rem;
+  margin-top: 0.5rem;
+}
+
+.memos-modal__footer-right {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-left: auto;
+}
+
+.memos-btn-primary {
+  padding: 0.5rem 1.1rem;
+  background-color: var(--memo-accent);
+  color: #ffffff !important;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.86rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.dark .memos-btn-primary {
+  color: #1a1a18 !important;
+}
+
+.memos-btn-primary:hover {
+  opacity: 0.9;
+}
+
+.memos-btn-secondary,
+.memos-btn-cancel,
+.memos-btn-danger {
+  padding: 0.45rem 0.85rem;
+  background: none;
+  border: 1px solid var(--memo-line);
+  border-radius: 6px;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  font-family: inherit;
+}
+
+.memos-btn-secondary {
+  color: var(--memo-muted);
+}
+.memos-btn-secondary:hover {
+  color: var(--memo-ink);
+  border-color: var(--memo-accent);
+}
+
+.memos-btn-cancel {
+  color: var(--memo-muted);
+}
+.memos-btn-cancel:hover {
+  color: var(--memo-ink);
+}
+
+.memos-btn-danger {
+  color: #e06c75;
+  border-color: rgba(224, 108, 117, 0.3);
+}
+.memos-btn-danger:hover {
+  background-color: rgba(224, 108, 117, 0.1);
+}
+
+/* 响应式适配 */
+@media (max-width: 640px) {
+  .memos-container {
+    padding: 2.5rem 0.6rem 3rem;
+  }
+  .memos-profile-card {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1rem;
+  }
+  .memos-profile-card__right {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+  .memos-profile-card__stats {
+    width: 100%;
+    justify-content: space-around;
+    border-top: 1px solid var(--memo-line);
+    padding-top: 0.75rem;
+  }
+  .memos-publish-actions {
+    width: 100%;
+    justify-content: stretch;
+  }
+  .memos-btn-publish {
+    flex-grow: 1;
+    justify-content: center;
+  }
+  .memos-form-row {
+    grid-template-columns: 1fr;
+  }
+  .memo-card {
+    gap: 0.75rem;
+  }
+  .memo-card__avatar-col {
+    display: none;
+  }
+  .memo-card__body {
+    padding: 1rem;
+  }
+}
