@@ -1,65 +1,71 @@
 {{ define "main" }}
+  {{ $editorialCSS := resources.Get "css/editorial.css" }}
+  {{ if $editorialCSS }}
+    <style>{{ $editorialCSS.Content | safeCSS }}</style>
+  {{ end }}
   {{ .Scratch.Set "scope" "single" }}
-  <article class="editorial-article">
-    {{/* Hero */}}
-    {{ if .Params.showHero | default (site.Params.article.showHero | default false) }}
-      {{ $heroStyle := .Params.heroStyle }}
-      {{ if not $heroStyle }}{{ $heroStyle = site.Params.article.heroStyle }}{{ end }}
-      {{ $heroStyle := print "hero/" $heroStyle ".html" }}
-      {{ if templates.Exists (printf "partials/%s" $heroStyle) }}
-        {{ partial $heroStyle . }}
-      {{ else }}
-        {{ partial "hero/basic.html" . }}
-      {{ end }}
-    {{ end }}
-
-    {{/* Header */}}
-    <header id="single_header" class="editorial-article__header">
-      {{ if .Params.showBreadcrumbs | default (site.Params.article.showBreadcrumbs | default false) }}
-        {{ partial "breadcrumbs.html" . }}
+  <div class="w-full flex justify-center">
+    <article class="editorial-article w-full">
+      {{/* Hero */}}
+      {{ if .Params.showHero | default (site.Params.article.showHero | default false) }}
+        {{ $heroStyle := .Params.heroStyle }}
+        {{ if not $heroStyle }}{{ $heroStyle = site.Params.article.heroStyle }}{{ end }}
+        {{ $heroStyle := print "hero/" $heroStyle ".html" }}
+        {{ if templates.Exists (printf "partials/%s" $heroStyle) }}
+          {{ partial $heroStyle . }}
+        {{ else }}
+          {{ partial "hero/basic.html" . }}
+        {{ end }}
       {{ end }}
 
-      <h1 class="editorial-article__title">{{ .Title | emojify }}</h1>
+      {{/* Header */}}
+      <header id="single_header" class="editorial-article__header">
+        {{ if .Params.showBreadcrumbs | default (site.Params.article.showBreadcrumbs | default false) }}
+          {{ partial "breadcrumbs.html" . }}
+        {{ end }}
 
-      <div class="editorial-article__meta print:hidden">
-        {{ partial "article-meta/basic.html" (dict "context" . "scope" "single") }}
-      </div>
+        <h1 class="editorial-article__title">{{ .Title | emojify }}</h1>
 
-      {{ if not (.Params.showAuthorBottom | default (site.Params.article.showAuthorBottom | default false)) }}
-        {{ template "SingleAuthor" . }}
-      {{ end }}
-    </header>
-
-    {{/* Body */}}
-    {{ $enableToc := site.Params.article.showTableOfContents | default false }}
-    {{ $enableToc = .Params.showTableOfContents | default $enableToc }}
-    {{ $showToc := and $enableToc (in .TableOfContents "<ul") }}
-    {{ $topClass := cond (hasPrefix site.Params.header.layout "fixed") "lg:top-[140px]" "lg:top-10" }}
-
-    <section class="editorial-article__layout prose dark:prose-invert">
-      <div class="editorial-article__main">
-        {{ partial "series/series.html" . }}
-
-        <div class="article-content heti heti--classic editorial-article__content" id="article-content">
-          {{ .Content }}
+        <div class="editorial-article__meta print:hidden">
+          {{ partial "article-meta/basic.html" (dict "context" . "scope" "single") }}
         </div>
 
-        {{ template "ArticleFooter" . }}
-
-        {{ if .Params.showAuthorBottom | default (site.Params.article.showAuthorBottom | default false) }}
+        {{ if not (.Params.showAuthorBottom | default (site.Params.article.showAuthorBottom | default false)) }}
           {{ template "SingleAuthor" . }}
         {{ end }}
-      </div>
+      </header>
 
-      {{ if $showToc }}
-        <aside class="editorial-toc print:hidden">
-          <div class="toc lg:sticky {{ $topClass }}">
-            {{ partial "toc.html" . }}
+      {{/* Body */}}
+      {{ $enableToc := site.Params.article.showTableOfContents | default false }}
+      {{ $enableToc = .Params.showTableOfContents | default $enableToc }}
+      {{ $showToc := and $enableToc (in .TableOfContents "<ul") }}
+      {{ $topClass := cond (hasPrefix site.Params.header.layout "fixed") "lg:top-[140px]" "lg:top-10" }}
+
+      <section class="editorial-article__layout prose dark:prose-invert">
+        <div class="editorial-article__main">
+          {{ partial "series/series.html" . }}
+
+          <div class="article-content heti heti--classic editorial-article__content" id="article-content">
+            {{ .Content }}
           </div>
-        </aside>
-      {{ end }}
-    </section>
-  </article>
+
+          {{ template "ArticleFooter" . }}
+
+          {{ if .Params.showAuthorBottom | default (site.Params.article.showAuthorBottom | default false) }}
+            {{ template "SingleAuthor" . }}
+          {{ end }}
+        </div>
+
+        {{ if $showToc }}
+          <aside class="editorial-toc print:hidden">
+            <div class="toc lg:sticky {{ $topClass }}">
+              {{ partial "toc.html" . }}
+            </div>
+          </aside>
+        {{ end }}
+      </section>
+    </article>
+  </div>
 {{ end }}
 
 {{ define "SingleAuthor" }}

@@ -1,49 +1,55 @@
 {{ define "main" }}
-<section class="editorial-list">
-  <header class="editorial-list__header">
-    <h1 class="editorial-list__title">{{ .Title }}</h1>
-    <span class="editorial-list__count">{{ len .Pages }} notes</span>
-  </header>
+{{ $editorialCSS := resources.Get "css/editorial.css" }}
+{{ if $editorialCSS }}
+  <style>{{ $editorialCSS.Content | safeCSS }}</style>
+{{ end }}
+<div class="w-full flex justify-center">
+  <section class="editorial-list w-full">
+    <header class="editorial-list__header">
+      <h1 class="editorial-list__title">{{ .Title }}</h1>
+      <span class="editorial-list__count">{{ len .Pages }} notes</span>
+    </header>
 
-  {{ range .Pages.GroupByDate "2006" }}
-    {{ if .Key }}
-      <section class="editorial-year" aria-labelledby="year-{{ .Key }}">
-        <h2 id="year-{{ .Key }}" class="editorial-year__label">{{ .Key }}</h2>
+    {{ range .Pages.GroupByDate "2006" }}
+      {{ if .Key }}
+        <section class="editorial-year" aria-labelledby="year-{{ .Key }}">
+          <h2 id="year-{{ .Key }}" class="editorial-year__label">{{ .Key }}</h2>
 
-        <div class="editorial-year__entries">
-          {{ range .Pages }}
-            <article class="editorial-entry">
-              <div class="editorial-entry__main">
-                <h3 class="editorial-entry__title">
-                  <a href="{{ .RelPermalink }}">{{ .Title }}</a>
-                </h3>
+          <div class="editorial-year__entries">
+            {{ range .Pages }}
+              <article class="editorial-entry">
+                <div class="editorial-entry__main">
+                  <h3 class="editorial-entry__title">
+                    <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+                  </h3>
 
-                {{ with .Params.summary }}
-                  <p class="editorial-entry__summary">{{ . }}</p>
-                {{ else }}
-                  {{ with .Summary }}
-                    <p class="editorial-entry__summary">{{ . | plainify | truncate 150 }}</p>
-                  {{ end }}
-                {{ end }}
-
-                {{ with .Params.tags }}
-                  <div class="editorial-entry__topics" aria-label="Topics">
-                    {{ range first 4 . }}
-                      <a class="editorial-entry__topic" href="{{ (printf "/tags/%s" . | urlize) | relLangURL }}">{{ . }}</a>
+                  {{ with .Params.summary }}
+                    <p class="editorial-entry__summary">{{ . }}</p>
+                  {{ else }}
+                    {{ with .Summary }}
+                      <p class="editorial-entry__summary">{{ . | plainify | truncate 150 }}</p>
                     {{ end }}
-                  </div>
-                {{ end }}
-              </div>
+                  {{ end }}
 
-              <div class="editorial-entry__meta">
-                <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "02 Jan" }}</time>
-                <span>{{ .ReadingTime }} min</span>
-              </div>
-            </article>
-          {{ end }}
-        </div>
-      </section>
+                  {{ with .Params.tags }}
+                    <div class="editorial-entry__topics" aria-label="Topics">
+                      {{ range first 4 . }}
+                        <a class="editorial-entry__topic" href="{{ (printf "/tags/%s" . | urlize) | relLangURL }}">{{ . }}</a>
+                      {{ end }}
+                    </div>
+                  {{ end }}
+                </div>
+
+                <div class="editorial-entry__meta">
+                  <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "02 Jan" }}</time>
+                  <span>{{ .ReadingTime }} min</span>
+                </div>
+              </article>
+            {{ end }}
+          </div>
+        </section>
+      {{ end }}
     {{ end }}
-  {{ end }}
-</section>
+  </section>
+</div>
 {{ end }}
