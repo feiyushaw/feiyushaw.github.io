@@ -5,20 +5,25 @@
   class="scroll-smooth"
   data-default-appearance="{{ site.Params.defaultAppearance | default `light` }}"
   data-auto-appearance="{{ site.Params.autoSwitchAppearance | default `true` }}">
-
   {{- partial "head.html" . -}}
   {{- partialCached "init.html" . -}}
+  {{ $homeStyle := resources.Get "css/homepage-editorial.css" }}
+  {{ if $homeStyle }}
+    <style>{{ $homeStyle.Content | safeCSS }}</style>
+  {{ end }}
 
   <body class="homepage-body m-0 p-0">
     <main class="homepage-shell">
       <section class="homepage-visual" aria-label="Homepage cover image">
-        {{ with .Params.images }}
-          {{ range first 1 . }}
-            <img src="{{ . }}" alt="{{ $.Title }}" class="homepage-cover" />
+        <div class="homepage-visual-wrapper">
+          {{ with .Params.images }}
+            {{ range first 1 . }}
+              <img src="{{ . }}" alt="{{ $.Title }}" class="homepage-cover" />
+            {{ end }}
+          {{ else }}
+            <img src="/cover-no-frame.jpg" alt="{{ .Title }}" class="homepage-cover" />
           {{ end }}
-        {{ else }}
-          <img src="/cover-no-frame.jpg" alt="{{ .Title }}" class="homepage-cover" />
-        {{ end }}
+        </div>
       </section>
 
       <section class="homepage-panel">

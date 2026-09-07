@@ -13,51 +13,6 @@ body {
   background-size: 26px 26px !important;
 }
 
-/* Homepage: calm split-screen composition. */
-.homepage-shell {
-  grid-template-columns: minmax(0, 52fr) minmax(360px, 48fr);
-}
-
-.homepage-panel {
-  padding: clamp(1.5rem, 2.4vw, 2.5rem) clamp(2rem, 4vw, 4.25rem);
-  background-size: 26px 26px;
-}
-
-.homepage-copy {
-  width: min(100%, 560px);
-  padding: clamp(2.5rem, 6vh, 5rem) 0;
-}
-
-.homepage-kicker {
-  margin-bottom: 1rem;
-  font-size: 0.66rem;
-  letter-spacing: 0.13em;
-}
-
-.homepage-title {
-  max-width: 15ch;
-  font-size: clamp(2.5rem, 3.4vw, 4.15rem);
-  line-height: 1.05;
-  letter-spacing: -0.032em;
-}
-
-.homepage-content {
-  width: min(100%, 31rem);
-  margin-top: 1.7rem;
-  font-size: 0.98rem;
-  line-height: 1.8;
-}
-
-.homepage-content .homepage-action-link {
-  margin-top: 1.65rem;
-  text-align: left;
-}
-
-.homepage-nav {
-  font-size: 0.7rem;
-  letter-spacing: 0.08em;
-}
-
 /* Lists */
 .editorial-list {
   width: min(100%, 820px);
@@ -120,89 +75,9 @@ body {
   line-height: 1.82;
 }
 
-/* Important: a CSS viewport around 800–1023px is still desktop for this site.
-   The base homepage stylesheet used to collapse here; explicitly restore the split. */
-@media (min-width: 721px) and (max-width: 1023px) {
-  .homepage-shell {
-    display: grid;
-    grid-template-columns: minmax(0, 52fr) minmax(340px, 48fr);
-    min-height: 100vh;
-  }
-
-  .homepage-visual {
-    min-height: 100vh;
-    height: auto;
-  }
-
-  .homepage-cover {
-    min-height: 100vh;
-    height: 100%;
-  }
-
-  .homepage-panel {
-    min-height: 100vh;
-    border-top: 0;
-    border-left: 1px solid var(--editorial-line);
-    padding: 1.5rem clamp(1.5rem, 3vw, 2.5rem);
-  }
-
-  .homepage-nav {
-    justify-content: flex-end;
-  }
-
-  .homepage-copy {
-    padding: 2.5rem 0 3rem;
-  }
-
-  .homepage-title {
-    max-width: 15ch;
-    font-size: clamp(2.35rem, 5.3vw, 3.35rem);
-  }
-}
-
 @media (max-width: 720px) {
   body {
     background-size: 24px 24px !important;
-  }
-
-  .homepage-shell {
-    display: block;
-    min-height: auto;
-  }
-
-  .homepage-visual {
-    height: 40vh;
-    min-height: 280px;
-  }
-
-  .homepage-cover {
-    min-height: 0;
-    height: 100%;
-  }
-
-  .homepage-panel {
-    min-height: auto;
-    border-left: 0;
-    border-top: 1px solid var(--editorial-line);
-    padding: 1.15rem 1.2rem 1.7rem;
-  }
-
-  .homepage-nav {
-    justify-content: flex-start;
-  }
-
-  .homepage-copy {
-    padding: 2.7rem 0 3.2rem;
-  }
-
-  .homepage-title {
-    max-width: 15ch;
-    font-size: clamp(2.25rem, 10vw, 3.25rem);
-  }
-
-  .homepage-content {
-    font-size: 0.93rem;
-    line-height: 1.75;
   }
 
   .editorial-list {

@@ -1,238 +1,333 @@
-/* Editorial homepage layer */
+/* ==============================================================================
+   Editorial Homepage Design System (Refined Magazine & Art Gallery Composition)
+   ============================================================================== */
 
 .homepage-body {
   min-height: 100vh;
+  margin: 0;
+  padding: 0;
   color: var(--editorial-ink);
-  background: var(--editorial-paper);
+  background-color: var(--editorial-paper);
+  background-image: none !important;
+  font-family: 'Commissioner', 'FangZhengShuSong', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  overflow-x: hidden;
 }
 
+/* 主容器：桌面端左右分栏 */
 .homepage-shell {
   min-height: 100vh;
   display: grid;
-  grid-template-columns: minmax(0, 56fr) minmax(420px, 44fr);
-  background: var(--editorial-paper);
+  grid-template-columns: minmax(0, 1.12fr) minmax(400px, 0.88fr);
+  background-color: var(--editorial-paper);
 }
 
+/* 左侧：视觉画廊展示区 */
 .homepage-visual {
   position: relative;
   min-height: 100vh;
+  background-color: var(--editorial-surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   overflow: hidden;
-  background: var(--editorial-surface);
+  padding: clamp(1.8rem, 3.5vw, 4rem);
 }
 
-.homepage-visual::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.02), rgba(0, 0, 0, 0.08));
+.homepage-visual-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  max-height: 88vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 16px 45px rgba(0, 0, 0, 0.08), 0 2px 10px rgba(0, 0, 0, 0.04);
+  background-color: var(--editorial-paper);
+}
+
+.dark .homepage-visual-wrapper {
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45), 0 2px 10px rgba(0, 0, 0, 0.2);
 }
 
 .homepage-cover {
   width: 100%;
   height: 100%;
-  min-height: 100vh;
-  display: block;
   object-fit: cover;
   object-position: center;
-  transform: scale(1.001);
+  display: block;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+.homepage-visual-wrapper:hover .homepage-cover {
+  transform: scale(1.02);
+}
+
+/* 右侧：内容与导航面板 */
 .homepage-panel {
   min-width: 0;
   min-height: 100vh;
-  display: grid;
-  grid-template-rows: auto 1fr auto;
-  padding: clamp(1.6rem, 3vw, 3rem) clamp(1.8rem, 5vw, 5.5rem);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: clamp(2rem, 4vw, 4rem) clamp(2.5rem, 5vw, 5.5rem);
   border-left: 1px solid var(--editorial-line);
-  background:
-    linear-gradient(var(--editorial-grid) 1px, transparent 1px),
-    linear-gradient(90deg, var(--editorial-grid) 1px, transparent 1px),
-    var(--editorial-paper);
-  background-size: 20px 20px;
+  background-color: var(--editorial-paper);
+  background-image: none !important;
+  position: relative;
 }
-
+/* 顶部导航 */
 .homepage-nav {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.65rem 1.25rem;
+  align-items: center;
   justify-content: flex-end;
+  gap: 0.9rem 1.6rem;
+  font-size: 0.84rem;
+  letter-spacing: 0.06em;
+  padding: 0;
+  margin: 0;
   background: transparent !important;
-  backdrop-filter: none !important;
-  font-size: 0.74rem;
-  letter-spacing: 0.12em;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
 }
 
 .homepage-nav a {
   color: var(--editorial-muted) !important;
   text-decoration: none !important;
-  transition: color 160ms ease;
+  font-weight: 500;
+  position: relative;
+  padding: 0.25rem 0;
+  transition: color 0.2s ease;
 }
 
+.homepage-nav a::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 1.5px;
+  background-color: var(--editorial-accent);
+  transition: width 0.25s ease;
+}
 .homepage-nav a:hover {
   color: var(--editorial-ink) !important;
 }
 
+.homepage-nav a:hover::after {
+  width: 100%;
+}
+
+/* 中部核心文案 */
 .homepage-copy {
-  align-self: center;
-  width: min(100%, 650px);
-  padding: clamp(3.5rem, 8vh, 7.5rem) 0;
+  margin: auto 0;
+  padding: 2rem 0;
+  max-width: 560px;
 }
 
 .homepage-kicker {
-  margin: 0 0 1.25rem;
-  color: var(--editorial-muted);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 0.7rem;
-  line-height: 1.4;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0 0 1.2rem;
+  color: var(--editorial-accent);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.74rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
+  font-weight: 600;
+}
+
+.homepage-kicker::before {
+  content: "";
+  display: inline-block;
+  width: 18px;
+  height: 1.5px;
+  background-color: var(--editorial-accent);
 }
 
 .homepage-title {
-  max-width: 11ch;
   margin: 0;
   color: var(--editorial-ink) !important;
-  font-family: ui-serif, Georgia, Cambria, "Times New Roman", serif;
-  font-size: clamp(3.2rem, 5.3vw, 6.8rem);
-  font-weight: 400;
-  line-height: 0.94;
-  letter-spacing: -0.055em;
+  font-family: 'FangZhengShuSong', 'HanaMinA', 'Fraunces', Georgia, serif;
+  font-size: clamp(2.4rem, 3.6vw, 3.8rem);
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: -0.025em;
   text-wrap: balance;
 }
 
 .homepage-content {
-  width: min(100%, 34rem);
-  margin-top: clamp(2rem, 4vh, 3rem);
+  margin-top: 1.6rem;
   color: var(--editorial-muted);
-  font-size: clamp(0.96rem, 1.15vw, 1.08rem);
-  line-height: 1.9;
+  font-size: 1rem;
+  line-height: 1.85;
 }
 
 .homepage-content p {
   margin: 0 0 1rem;
 }
 
+.homepage-content p:last-child {
+  margin-bottom: 0;
+}
+
+/* 进入阅读 CTA 按钮 */
 .homepage-content .homepage-action-link {
-  margin-top: 2.25rem;
+  margin-top: 2.4rem;
 }
 
 .homepage-content .homepage-action-link a {
   display: inline-flex;
   align-items: center;
-  gap: 0.7rem;
-  color: var(--editorial-ink) !important;
-  background-image: none !important;
+  gap: 0.75rem;
+  padding: 0.8rem 1.6rem;
+  background-color: var(--editorial-ink);
+  color: var(--editorial-paper) !important;
+  border-radius: 6px;
   text-decoration: none !important;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 0.72rem;
-  letter-spacing: 0.13em;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.8rem;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
+  font-weight: 600;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.homepage-content .homepage-action-link a:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  background-color: var(--editorial-accent);
+  color: #ffffff !important;
+}
+
+.dark .homepage-content .homepage-action-link a:hover {
+  color: #1a1a18 !important;
 }
 
 .homepage-content .homepage-action-link a::after {
   content: "→";
-  transition: transform 160ms ease;
+  font-size: 1.15em;
+  transition: transform 0.2s ease;
 }
 
 .homepage-content .homepage-action-link a:hover::after {
   transform: translateX(4px);
 }
 
+/* 底部 Footer */
 .homepage-footer {
   display: flex;
   align-items: center;
-  gap: 0.7rem;
+  gap: 0.8rem;
   color: var(--editorial-faint);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 0.62rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.7rem;
   letter-spacing: 0.06em;
+  padding-top: 1.5rem;
 }
 
 .homepage-footer__rule {
   flex: 1 1 auto;
   height: 1px;
-  background: var(--editorial-line);
+  background-color: var(--editorial-line);
 }
 
 .homepage-footer a {
   flex: 0 0 auto;
   color: var(--editorial-muted) !important;
   text-decoration: none !important;
+  transition: color 0.18s ease;
 }
 
 .homepage-footer a:hover {
   color: var(--editorial-ink) !important;
 }
 
-@media (max-width: 1023px) {
+/* ================= 响应式断点适配 ================= */
+
+/* 中等尺寸屏幕 / 平板横屏 (860px ~ 1100px) */
+@media (min-width: 861px) and (max-width: 1100px) {
   .homepage-shell {
-    display: block;
-    min-height: auto;
+    grid-template-columns: 1fr 1fr;
   }
-
-  .homepage-visual {
-    min-height: 0;
-    height: min(58vh, 640px);
+  .homepage-panel {
+    padding: 2rem 2.5rem;
   }
+  .homepage-title {
+    font-size: 2.4rem;
+  }
+}
 
-  .homepage-cover {
-    min-height: 0;
-    height: 100%;
+/* 平板竖屏与手机移动端 (< 860px) */
+@media (max-width: 860px) {
+  .homepage-shell {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
   }
 
   .homepage-panel {
     min-height: auto;
     border-left: 0;
-    border-top: 1px solid var(--editorial-line);
-    padding: 1.5rem clamp(1.4rem, 6vw, 3.5rem) 2rem;
+    padding: 1.5rem 1.4rem 2.5rem;
+    order: 2;
   }
 
-  .homepage-nav {
-    justify-content: flex-start;
-  }
-
-  .homepage-copy {
-    padding: clamp(3.75rem, 10vh, 6rem) 0;
-  }
-
-  .homepage-title {
-    max-width: 13ch;
-    font-size: clamp(3rem, 11vw, 6rem);
-  }
-}
-
-@media (max-width: 640px) {
   .homepage-visual {
-    height: 45vh;
-    min-height: 320px;
+    min-height: 0;
+    padding: 1.4rem 1.4rem 0;
+    order: 1;
+    background-color: transparent;
   }
 
-  .homepage-panel {
-    padding-inline: 1.25rem;
+  .homepage-visual-wrapper {
+    max-height: 380px;
+    aspect-ratio: 16 / 10;
   }
 
   .homepage-nav {
-    gap: 0.7rem 1rem;
-    font-size: 0.68rem;
+    justify-content: center;
+    gap: 0.7rem 1.2rem;
+    padding-bottom: 0.9rem;
+    border-bottom: 1px solid var(--editorial-line);
   }
 
   .homepage-copy {
-    padding: 3.5rem 0 4.25rem;
+    margin: 1.8rem 0 1.2rem;
+    padding: 0;
   }
 
   .homepage-title {
-    font-size: clamp(2.8rem, 15vw, 4.8rem);
+    font-size: clamp(2rem, 7.5vw, 2.6rem);
   }
 
   .homepage-content {
-    font-size: 0.96rem;
-    line-height: 1.82;
+    margin-top: 1.2rem;
+    font-size: 0.95rem;
+    line-height: 1.75;
+  }
+
+  .homepage-content .homepage-action-link {
+    margin-top: 1.6rem;
+  }
+
+  .homepage-content .homepage-action-link a {
+    width: 100%;
+    justify-content: center;
+    padding: 0.8rem 1.4rem;
   }
 
   .homepage-footer {
+    justify-content: center;
     flex-wrap: wrap;
-    row-gap: 0.45rem;
+    text-align: center;
+    padding-top: 1.5rem;
+    border-top: 1px dashed var(--editorial-line);
   }
 
   .homepage-footer__rule {
@@ -241,14 +336,27 @@
 
   .homepage-footer a {
     width: 100%;
-    margin-top: 0.15rem;
+    margin-top: 0.3rem;
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .homepage-content .homepage-action-link a::after,
-  .homepage-nav a,
-  .homepage-footer a {
-    transition: none;
+/* 超小屏适配 (< 420px) */
+@media (max-width: 420px) {
+  .homepage-panel {
+    padding: 1.2rem 1rem 2rem;
+  }
+  .homepage-visual {
+    padding: 1rem 1rem 0;
+  }
+  .homepage-visual-wrapper {
+    max-height: 260px;
+    aspect-ratio: 16 / 10;
+  }
+  .homepage-nav {
+    font-size: 0.78rem;
+    gap: 0.5rem 0.85rem;
+  }
+  .homepage-title {
+    font-size: 1.85rem;
   }
 }
