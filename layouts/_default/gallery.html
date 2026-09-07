@@ -1,0 +1,379 @@
+{{ define "main" }}
+{{ $photos := site.Data.photos }}
+{{ $galleryStyle := resources.Get "css/gallery.css" }}
+{{ if $galleryStyle }}
+  <style>{{ $galleryStyle.Content | safeCSS }}</style>
+{{ end }}
+
+<div class="gallery-container">
+  <!-- 页面顶栏 Header -->
+  <header class="gallery-header">
+    <div class="gallery-header__meta">
+      <div class="gallery-header__kicker">VISUAL ARCHIVE &middot; EXIF PHOTO STREAM</div>
+      <h1 class="gallery-title">{{ .Title }}</h1>
+      <p class="gallery-subtitle">{{ .Params.description | default "光影、街头与定格瞬间 · 胶片感与 EXIF 摄影画廊" }}</p>
+    </div>
+
+    <!-- 控制面板：影集切换与视图模式切换 -->
+    <div class="gallery-controls">
+      <!-- 影集分类过滤 -->
+      {{ $allAlbums := slice }}
+      {{ range $photos }}
+        {{ with .album }}
+          {{ $allAlbums = $allAlbums | append . }}
+        {{ end }}
+      {{ end }}
+      {{ $uniqueAlbums := $allAlbums | uniq }}
+
+      <div class="gallery-albums-bar" id="gallery-albums-bar">
+        <button type="button" class="gallery-album-btn active" data-album="all">全部作品 <span class="gallery-count">({{ len $photos }})</span></button>
+        {{ range $album := $uniqueAlbums }}
+          {{ $count := 0 }}
+          {{ $albumName := $album }}
+          {{ range $photos }}
+            {{ if eq .album $album }}
+              {{ $count = add $count 1 }}
+              {{ with .albumTitle }}{{ $albumName = . }}{{ end }}
+            {{ end }}
+          {{ end }}
+          <button type="button" class="gallery-album-btn" data-album="{{ $album }}">{{ $albumName }} <span class="gallery-count">({{ $count }})</span></button>
+        {{ end }}
+      </div>
+
+      <!-- 视图切换按钮 (Feed 模式 / Grid 模式) -->
+      <div class="gallery-view-switcher" role="group" aria-label="View Mode">
+        <button type="button" id="btn-view-feed" class="gallery-view-btn active" onclick="switchViewMode('feed')" title="大图流模式 (Feed View)">
+          <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="3" y1="9" x2="21" y2="9"></line>
+            <line x1="3" y1="15" x2="21" y2="15"></line>
+          </svg>
+          <span>Feed</span>
+        </button>
+        <button type="button" id="btn-view-grid" class="gallery-view-btn" onclick="switchViewMode('grid')" title="网格模式 (Grid View)">
+          <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+          </svg>
+          <span>Grid</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= 摄影作品容器 (支持 Feed 与 Grid 两种布局) ================= -->
+  <main class="gallery-stream gallery-stream--feed" id="gallery-stream">
+    {{ if $photos }}
+      {{ range $index, $photo := $photos }}
+        {{ $id := .id | default (printf "photo-%d" $index) }}
+        {{ $album := .album | default "default" }}
+        
+        <article 
+          class="photo-card" 
+          id="{{ $id }}"
+          data-id="{{ $id }}"
+          data-album="{{ $album }}"
+          data-index="{{ $index }}"
+          data-title="{{ .title }}"
+          data-url="{{ .url }}"
+          data-camera="{{ .camera }}"
+          data-lens="{{ .lens }}"
+          data-focal="{{ .focalLength }}"
+          data-aperture="{{ .aperture }}"
+          data-shutter="{{ .shutter }}"
+          data-iso="{{ .iso }}"
+          data-location="{{ .location }}"
+          data-date="{{ .date }}">
+          
+          <!-- 照片主图区 -->
+          <div class="photo-card__visual">
+            <div class="photo-card__img-box" onclick="openPhotoModal({{ $index }})">
+              <img 
+                src="{{ .url }}" 
+                alt="{{ .title | default (printf "Photo %d" (add $index 1)) }}" 
+                loading="lazy" 
+                class="photo-card__img" />
+              <div class="photo-card__hover-overlay">
+                <span class="photo-card__zoom-badge">
+                  <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    <line x1="11" y1="8" x2="11" y2="14"></line>
+                    <line x1="8" y1="11" x2="14" y2="11"></line>
+                  </svg>
+                  <span>查看 EXIF</span>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- EXIF 参数 HUD 栏 (暗房仪表盘风格) -->
+          <div class="photo-card__hud">
+            <div class="photo-hud__primary">
+              {{ with .camera }}
+                <div class="photo-hud__camera" title="相机机型">
+                  <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none">
+                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                    <circle cx="12" cy="13" r="4"></circle>
+                  </svg>
+                  <span class="photo-hud__val">{{ . }}</span>
+                </div>
+              {{ end }}
+
+              {{ with .lens }}
+                <div class="photo-hud__lens" title="镜头型号">
+                  <span class="photo-hud__divider">&middot;</span>
+                  <span class="photo-hud__val">{{ . }}</span>
+                </div>
+              {{ end }}
+            </div>
+
+            <!-- 曝光三要素 Pills -->
+            <div class="photo-hud__exposure">
+              {{ with .focalLength }}
+                <span class="photo-pill" title="焦距">{{ . }}</span>
+              {{ end }}
+              {{ with .aperture }}
+                <span class="photo-pill" title="光圈">{{ . }}</span>
+              {{ end }}
+              {{ with .shutter }}
+                <span class="photo-pill" title="快门速度">{{ . }}</span>
+              {{ end }}
+              {{ with .iso }}
+                <span class="photo-pill" title="感光度">ISO {{ . }}</span>
+              {{ end }}
+            </div>
+
+            <div class="photo-hud__meta">
+              {{ with .location }}
+                <div class="photo-hud__location" title="拍摄地点">
+                  <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2" fill="none">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                  </svg>
+                  <span>{{ . }}</span>
+                </div>
+              {{ end }}
+
+              {{ with .date }}
+                <div class="photo-hud__date" title="拍摄日期">
+                  <span class="photo-hud__divider">&middot;</span>
+                  <time datetime="{{ . }}">{{ . }}</time>
+                </div>
+              {{ end }}
+
+              <!-- 快捷操作按钮 -->
+              <div class="photo-hud__actions">
+                <button type="button" class="photo-hud__btn" onclick="copyPhotoLink('{{ $id }}')" title="复制本作品链接" aria-label="Copy link">
+                  <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2" fill="none">
+                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </article>
+      {{ end }}
+    {{ else }}
+      <div class="gallery-empty">
+        <p>暂无摄影作品，请在 <code>data/photos.yaml</code> 中添加照片与 EXIF 参数。</p>
+      </div>
+    {{ end }}
+  </main>
+</div>
+
+<!-- ======================= 沉浸式暗房 EXIF 大图 Lightbox ======================= -->
+<div id="gallery-modal" class="gallery-modal" style="display: none;" onclick="closePhotoModalOnBackdrop(event)">
+  <div class="gallery-modal__dialog">
+    <button type="button" class="gallery-modal__close" onclick="closePhotoModal()" aria-label="Close modal">&times;</button>
+    
+    <!-- 上一张 / 下一张控制按钮 -->
+    <button type="button" class="gallery-modal__nav gallery-modal__nav--prev" onclick="navigatePhoto(-1)" aria-label="Previous photo">&#10094;</button>
+    <button type="button" class="gallery-modal__nav gallery-modal__nav--next" onclick="navigatePhoto(1)" aria-label="Next photo">&#10095;</button>
+
+    <div class="gallery-modal__body">
+      <div class="gallery-modal__image-wrapper">
+        <img id="modal-img" src="" alt="Photo Fullscreen" />
+      </div>
+
+      <!-- 浮层 EXIF 信息栏 -->
+      <div class="gallery-modal__hud">
+        <div class="modal-hud__header">
+          <h3 id="modal-title" class="modal-hud__title"></h3>
+          <span id="modal-counter" class="modal-hud__counter"></span>
+        </div>
+
+        <div class="modal-hud__row modal-hud__gear">
+          <span id="modal-camera" class="modal-hud__item"></span>
+          <span id="modal-lens" class="modal-hud__item"></span>
+        </div>
+
+        <div class="modal-hud__row modal-hud__params">
+          <span id="modal-focal" class="modal-pill"></span>
+          <span id="modal-aperture" class="modal-pill"></span>
+          <span id="modal-shutter" class="modal-pill"></span>
+          <span id="modal-iso" class="modal-pill"></span>
+        </div>
+
+        <div class="modal-hud__row modal-hud__geo">
+          <span id="modal-location"></span>
+          <span id="modal-date"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 吐司提示组件 -->
+<div id="gallery-toast" class="gallery-toast"></div>
+
+<!-- 页面交互与相册/EXIF控制器脚本 -->
+<script>
+(function() {
+  const albumButtons = document.querySelectorAll('.gallery-album-btn');
+  const cards = document.querySelectorAll('.photo-card');
+  const stream = document.getElementById('gallery-stream');
+  let currentAlbum = 'all';
+  let currentIndex = 0;
+  const totalPhotos = cards.length;
+
+  // 相册切换
+  albumButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      albumButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentAlbum = btn.getAttribute('data-album');
+      filterPhotos();
+    });
+  });
+
+  function filterPhotos() {
+    cards.forEach(card => {
+      const album = card.getAttribute('data-album');
+      if (currentAlbum === 'all' || album === currentAlbum) {
+        card.style.display = '';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  }
+
+  // 视图模式切换 (Feed vs Grid)
+  window.switchViewMode = function(mode) {
+    const btnFeed = document.getElementById('btn-view-feed');
+    const btnGrid = document.getElementById('btn-view-grid');
+
+    if (mode === 'grid') {
+      stream.classList.remove('gallery-stream--feed');
+      stream.classList.add('gallery-stream--grid');
+      btnGrid.classList.add('active');
+      btnFeed.classList.remove('active');
+      localStorage.setItem('gallery_view_mode', 'grid');
+    } else {
+      stream.classList.remove('gallery-stream--grid');
+      stream.classList.add('gallery-stream--feed');
+      btnFeed.classList.add('active');
+      btnGrid.classList.remove('active');
+      localStorage.setItem('gallery_view_mode', 'feed');
+    }
+  };
+
+  // 读取已保存的视图喜好
+  const savedMode = localStorage.getItem('gallery_view_mode');
+  if (savedMode === 'grid') {
+    switchViewMode('grid');
+  }
+
+  // 模态弹窗控制
+  window.openPhotoModal = function(index) {
+    currentIndex = index;
+    updateModalContent();
+    const modal = document.getElementById('gallery-modal');
+    if (modal) {
+      modal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    }
+  };
+
+  window.closePhotoModal = function() {
+    const modal = document.getElementById('gallery-modal');
+    if (modal) {
+      modal.style.display = 'none';
+      document.body.style.overflow = '';
+    }
+  };
+
+  window.closePhotoModalOnBackdrop = function(e) {
+    if (e.target.id === 'gallery-modal' || e.target.classList.contains('gallery-modal__image-wrapper')) {
+      closePhotoModal();
+    }
+  };
+
+  window.navigatePhoto = function(direction) {
+    currentIndex = (currentIndex + direction + totalPhotos) % totalPhotos;
+    updateModalContent();
+  };
+
+  function updateModalContent() {
+    const card = cards[currentIndex];
+    if (!card) return;
+
+    document.getElementById('modal-img').src = card.getAttribute('data-url');
+    document.getElementById('modal-title').textContent = card.getAttribute('data-title') || `Photo ${currentIndex + 1}`;
+    document.getElementById('modal-counter').textContent = `${currentIndex + 1} / ${totalPhotos}`;
+    document.getElementById('modal-camera').textContent = card.getAttribute('data-camera') || '';
+    document.getElementById('modal-lens').textContent = card.getAttribute('data-lens') || '';
+    document.getElementById('modal-focal').textContent = card.getAttribute('data-focal') || '';
+    document.getElementById('modal-aperture').textContent = card.getAttribute('data-aperture') || '';
+    document.getElementById('modal-shutter').textContent = card.getAttribute('data-shutter') || '';
+    document.getElementById('modal-iso').textContent = card.getAttribute('data-iso') ? `ISO ${card.getAttribute('data-iso')}` : '';
+    document.getElementById('modal-location').textContent = card.getAttribute('data-location') ? `📍 ${card.getAttribute('data-location')}` : '';
+    document.getElementById('modal-date').textContent = card.getAttribute('data-date') || '';
+  }
+
+  // 键盘快捷键
+  document.addEventListener('keydown', (e) => {
+    const modal = document.getElementById('gallery-modal');
+    if (modal && modal.style.display === 'flex') {
+      if (e.key === 'Escape') closePhotoModal();
+      else if (e.key === 'ArrowLeft') navigatePhoto(-1);
+      else if (e.key === 'ArrowRight') navigatePhoto(1);
+    }
+  });
+
+  // 复制直达链接
+  window.copyPhotoLink = function(id) {
+    const url = window.location.origin + window.location.pathname + '#' + id;
+    navigator.clipboard.writeText(url).then(() => {
+      showGalleryToast('已复制照片直达链接');
+    }).catch(() => {
+      showGalleryToast('复制失败');
+    });
+  };
+
+  function showGalleryToast(msg) {
+    const toast = document.getElementById('gallery-toast');
+    if (!toast) return;
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2200);
+  }
+
+  // 锚点跳转高亮
+  if (window.location.hash) {
+    const targetId = window.location.hash.substring(1);
+    const targetCard = document.getElementById(targetId);
+    if (targetCard) {
+      setTimeout(() => {
+        targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        targetCard.classList.add('photo-card--highlight');
+        setTimeout(() => targetCard.classList.remove('photo-card--highlight'), 2000);
+      }, 300);
+    }
+  }
+})();
+</script>
+{{ end }}

@@ -1,0 +1,593 @@
+/* ==============================================================================
+   EXIF Photography Gallery Design System (Inspired by exif-photo-blog & graugris.art)
+   ============================================================================== */
+
+:root {
+  --photo-paper: var(--editorial-paper, #f7f6f2);
+  --photo-surface: var(--editorial-surface, #ffffff);
+  --photo-ink: var(--editorial-ink, #242424);
+  --photo-muted: var(--editorial-muted, #707070);
+  --photo-faint: var(--editorial-faint, #a0a0a0);
+  --photo-accent: var(--editorial-accent, #465a7a);
+  --photo-line: var(--editorial-line, #dedbd4);
+  --photo-hud-bg: rgba(255, 255, 255, 0.88);
+  --photo-pill-bg: rgba(0, 0, 0, 0.05);
+}
+
+.dark {
+  --photo-paper: var(--editorial-paper, #1c1c1a);
+  --photo-surface: var(--editorial-surface, #242422);
+  --photo-ink: var(--editorial-ink, #f0ede6);
+  --photo-muted: var(--editorial-muted, #a6a39b);
+  --photo-faint: var(--editorial-faint, #7a7770);
+  --photo-accent: var(--editorial-accent, #9aaac6);
+  --photo-line: var(--editorial-line, #363531);
+  --photo-hud-bg: rgba(30, 30, 28, 0.88);
+  --photo-pill-bg: rgba(255, 255, 255, 0.08);
+}
+
+.gallery-container {
+  width: min(100%, 880px);
+  margin-inline: auto;
+  padding: 3.5rem 1rem 5rem;
+  font-family: 'Commissioner', 'FangZhengShuSong', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* ================= 顶栏 Header 与控制面板 ================= */
+.gallery-header {
+  margin-bottom: 2.5rem;
+  border-bottom: 1px solid var(--photo-line);
+  padding-bottom: 1.6rem;
+}
+
+.gallery-header__kicker {
+  color: var(--photo-accent);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+}
+
+.gallery-title {
+  font-size: clamp(2.2rem, 4.5vw, 3.2rem);
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  color: var(--photo-ink) !important;
+  margin: 0 0 0.5rem;
+  font-family: 'FangZhengShuSong', 'HanaMinA', 'Fraunces', Georgia, serif;
+}
+
+.gallery-subtitle {
+  font-size: 0.95rem;
+  color: var(--photo-muted);
+  margin: 0 0 1.5rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.gallery-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+/* 相册筛选按钮 */
+.gallery-albums-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.gallery-album-btn {
+  padding: 0.35rem 0.85rem;
+  font-size: 0.82rem;
+  background-color: var(--photo-surface);
+  border: 1px solid var(--photo-line);
+  color: var(--photo-muted);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  font-family: inherit;
+}
+
+.gallery-album-btn:hover {
+  border-color: var(--photo-accent);
+  color: var(--photo-ink);
+}
+
+.gallery-album-btn.active {
+  background-color: var(--photo-accent);
+  border-color: var(--photo-accent);
+  color: #ffffff !important;
+  font-weight: 500;
+}
+
+.dark .gallery-album-btn.active {
+  color: #1a1a18 !important;
+}
+
+.gallery-count {
+  font-size: 0.75rem;
+  opacity: 0.8;
+  font-family: ui-monospace, SFMono-Regular, monospace;
+}
+
+/* 视图模式切换器 (Feed / Grid) */
+.gallery-view-switcher {
+  display: flex;
+  align-items: center;
+  background-color: var(--photo-surface);
+  border: 1px solid var(--photo-line);
+  border-radius: 6px;
+  padding: 2px;
+  margin-left: auto;
+}
+
+.gallery-view-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.75rem;
+  background: none;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.78rem;
+  color: var(--photo-muted);
+  cursor: pointer;
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  font-weight: 500;
+  transition: all 0.18s ease;
+}
+
+.gallery-view-btn:hover {
+  color: var(--photo-ink);
+}
+
+.gallery-view-btn.active {
+  background-color: var(--photo-accent);
+  color: #ffffff !important;
+}
+
+.dark .gallery-view-btn.active {
+  color: #1a1a18 !important;
+}
+
+/* ================= 摄影作品容器 (Feed 大图流模式) ================= */
+.gallery-stream--feed {
+  display: flex;
+  flex-direction: column;
+  gap: 3.5rem;
+}
+
+.photo-card {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--photo-surface);
+  border: 1px solid var(--photo-line);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.dark .photo-card {
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35);
+}
+
+.photo-card--highlight {
+  animation: photoHighlight 2s ease;
+}
+
+@keyframes photoHighlight {
+  0% { transform: scale(1.02); }
+  50% { box-shadow: 0 0 0 3px var(--photo-accent); }
+  100% { transform: scale(1); }
+}
+
+/* 照片主图区 */
+.photo-card__visual {
+  position: relative;
+  background-color: var(--photo-surface);
+  overflow: hidden;
+}
+
+.photo-card__img-box {
+  position: relative;
+  cursor: pointer;
+  display: block;
+}
+
+.photo-card__img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: contain;
+  max-height: 80vh;
+  margin: 0 auto;
+  transition: transform 0.4s ease;
+}
+
+.photo-card__hover-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.photo-card__img-box:hover .photo-card__hover-overlay {
+  opacity: 1;
+}
+
+.photo-card__zoom-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.9rem;
+  background-color: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(6px);
+  color: #ffffff;
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  font-family: ui-monospace, SFMono-Regular, monospace;
+}
+
+/* ================= EXIF 参数 HUD 面板 (Darkroom HUD Bar) ================= */
+.photo-card__hud {
+  padding: 1.1rem 1.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.8rem 1.2rem;
+  border-top: 1px solid var(--photo-line);
+  background-color: var(--photo-surface);
+  font-size: 0.82rem;
+}
+
+.photo-hud__primary {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  color: var(--photo-ink);
+}
+
+.photo-hud__camera {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-weight: 600;
+  color: var(--photo-ink);
+}
+
+.photo-hud__lens {
+  color: var(--photo-muted);
+}
+
+.photo-hud__divider {
+  color: var(--photo-faint);
+  margin: 0 0.1rem;
+}
+
+/* 曝光三要素 Pills */
+.photo-hud__exposure {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.photo-pill {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  background-color: var(--photo-pill-bg);
+  border: 1px solid var(--photo-line);
+  border-radius: 4px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.78rem;
+  color: var(--photo-ink);
+  font-weight: 500;
+}
+
+.photo-hud__meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--photo-muted);
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  font-size: 0.78rem;
+  margin-left: auto;
+}
+
+.photo-hud__location {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--photo-accent);
+}
+
+.photo-hud__actions {
+  display: flex;
+  align-items: center;
+}
+
+.photo-hud__btn {
+  background: none;
+  border: none;
+  color: var(--photo-muted);
+  cursor: pointer;
+  padding: 0.2rem;
+  display: flex;
+  align-items: center;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+}
+
+.photo-hud__btn:hover {
+  color: var(--photo-ink);
+  background-color: var(--photo-pill-bg);
+}
+
+/* ================= 摄影作品容器 (Grid 网格模式) ================= */
+.gallery-stream--grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.gallery-stream--grid .photo-card {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.gallery-stream--grid .photo-card__img {
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  max-height: none;
+}
+
+.gallery-stream--grid .photo-card__hud {
+  padding: 0.75rem 0.9rem;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.4rem;
+}
+
+.gallery-stream--grid .photo-hud__meta {
+  margin-left: 0;
+  width: 100%;
+  justify-content: space-between;
+}
+
+/* ================= 沉浸式暗房 EXIF Lightbox Modal ================= */
+.gallery-modal {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.94);
+  backdrop-filter: blur(8px);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gallery-modal__dialog {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1.5rem;
+}
+
+.gallery-modal__close {
+  position: absolute;
+  top: 1.2rem;
+  right: 1.5rem;
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: 2.2rem;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 10;
+  padding: 0.2rem 0.5rem;
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
+}
+
+.gallery-modal__close:hover {
+  opacity: 1;
+}
+
+.gallery-modal__nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  font-size: 1.5rem;
+  padding: 0.8rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  z-index: 10;
+  backdrop-filter: blur(4px);
+  transition: all 0.2s ease;
+}
+
+.gallery-modal__nav:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.gallery-modal__nav--prev {
+  left: 1.5rem;
+}
+
+.gallery-modal__nav--next {
+  right: 1.5rem;
+}
+
+.gallery-modal__body {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.gallery-modal__image-wrapper {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-height: 78vh;
+}
+
+.gallery-modal__image-wrapper img {
+  max-width: 90vw;
+  max-height: 78vh;
+  object-fit: contain;
+  border-radius: 6px;
+  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.6);
+}
+
+/* 模态框底部 EXIF HUD */
+.gallery-modal__hud {
+  width: min(100%, 720px);
+  margin-top: 1rem;
+  padding: 0.8rem 1.4rem;
+  background-color: rgba(24, 24, 24, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  backdrop-filter: blur(10px);
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-size: 0.82rem;
+}
+
+.modal-hud__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modal-hud__title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin: 0;
+  color: #ffffff;
+}
+
+.modal-hud__counter {
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  font-size: 0.78rem;
+  color: #888888;
+}
+
+.modal-hud__row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  font-family: ui-monospace, SFMono-Regular, monospace;
+}
+
+.modal-hud__gear {
+  color: #cccccc;
+  font-size: 0.8rem;
+}
+
+.modal-pill {
+  padding: 0.15rem 0.45rem;
+  background-color: rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
+  font-size: 0.75rem;
+  color: #ffffff;
+}
+
+.modal-hud__geo {
+  color: #9aaac6;
+  font-size: 0.78rem;
+}
+
+/* 吐司提示组件 */
+.gallery-toast {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(30px);
+  background-color: var(--photo-ink);
+  color: var(--photo-paper);
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  font-size: 0.88rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  z-index: 10001;
+  white-space: nowrap;
+}
+
+.gallery-toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ================= 响应式适配 ================= */
+@media (max-width: 640px) {
+  .gallery-container {
+    padding: 3rem 0.6rem 3.5rem;
+  }
+
+  .gallery-controls {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .gallery-view-switcher {
+    margin-left: 0;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .gallery-view-btn {
+    flex-grow: 1;
+    justify-content: center;
+  }
+
+  .photo-card__hud {
+    padding: 0.9rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.6rem;
+  }
+
+  .photo-hud__meta {
+    margin-left: 0;
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .gallery-modal__nav {
+    display: none; /* 移动端精简左右按钮，专注手势与单图 */
+  }
+
+  .gallery-modal__dialog {
+    padding: 0.8rem;
+  }
+}
