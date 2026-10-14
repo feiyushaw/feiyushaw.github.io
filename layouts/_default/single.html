@@ -1,8 +1,4 @@
 {{ define "main" }}
-  {{ $editorialCSS := resources.Get "css/editorial.css" }}
-  {{ if $editorialCSS }}
-    <style>{{ $editorialCSS.Content | safeCSS }}</style>
-  {{ end }}
   {{ .Scratch.Set "scope" "single" }}
   <div class="w-full flex justify-center">
     <article class="editorial-article w-full">

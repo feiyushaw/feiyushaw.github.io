@@ -1,0 +1,20 @@
+{{ $cssFiles := slice
+  "css/fonts.css"
+  "css/heti.min.css"
+  "css/components.css"
+  "css/editorial.css"
+  "css/editorial-scale-fix.css"
+  "css/homepage-editorial.css"
+  "css/memos.css"
+  "css/gallery.css"
+}}
+{{ $resources := slice }}
+{{ range $cssFiles }}
+  {{ with resources.Get . }}
+    {{ $resources = $resources | append . }}
+  {{ end }}
+{{ end }}
+{{ if gt (len $resources) 0 }}
+  {{ $bundle := $resources | resources.Concat "css/editorial-system.bundle.css" | resources.Fingerprint "sha512" }}
+  <link rel="stylesheet" type="text/css" href="{{ $bundle.RelPermalink }}" integrity="{{ $bundle.Data.Integrity }}" />
+{{ end }}

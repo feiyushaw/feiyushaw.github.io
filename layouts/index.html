@@ -7,10 +7,6 @@
   data-auto-appearance="{{ site.Params.autoSwitchAppearance | default `true` }}">
   {{- partial "head.html" . -}}
   {{- partialCached "init.html" . -}}
-  {{ $homeStyle := resources.Get "css/homepage-editorial.css" }}
-  {{ if $homeStyle }}
-    <style>{{ $homeStyle.Content | safeCSS }}</style>
-  {{ end }}
 
   <body class="homepage-body m-0 p-0">
     <main class="homepage-shell">
@@ -32,6 +28,7 @@
           <a href="{{ "memos/" | relLangURL }}">微语</a>
           <a href="{{ "archives/" | relLangURL }}">归档</a>
           <a href="{{ "gallery/" | relLangURL }}">摄影</a>
+          <a href="{{ "friends/" | relLangURL }}">友链</a>
           <a href="{{ "about/" | relLangURL }}">关于</a>
           <button
             id="appearance-switcher"

@@ -1,13 +1,13 @@
-/* Component-only styles kept from the former global custom.css.
-   This file must not set global body/nav/article/link/theme colors. */
+/* Component-only styles (Details, APlayer, Douban/NeoDB cards, and Friends cards).
+   Global typography and layout live in editorial.css. */
 
 /* Details / collapsible content */
 details[open] > summary svg { transform: rotate(180deg); }
 details > summary svg { transition: transform 0.2s ease; }
 details > summary { list-style: none; user-select: none; }
 details > summary::-webkit-details-marker { display: none; }
-details .highlight { border-radius: 4px; }
-details pre { border-radius: 4px; overflow-x: auto; }
+details .highlight { border-radius: 6px; }
+details pre { border-radius: 6px; overflow-x: auto; }
 details code { padding: 0; }
 
 /* Music player */
@@ -21,35 +21,178 @@ details code { padding: 0; }
   .aplayer { margin: 0 1rem; }
 }
 
-/* Douban-style content card shortcode */
+/* Douban / NeoDB content card shortcode */
 .db-card {
   margin: 2rem 0;
   border: 1px solid var(--editorial-line);
-  border-radius: 6px;
+  border-radius: 10px;
   background: var(--editorial-surface);
-  box-shadow: none;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.db-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
 }
 
 .db-card-subject {
   display: flex;
   align-items: flex-start;
   line-height: 1.6;
-  padding: 12px;
+  padding: 14px 16px;
   position: relative;
 }
 
 .db-card-content { flex: 1 1 auto; min-width: 0; }
-.db-card-post { width: 96px; margin-right: 15px; display: flex; flex: 0 0 auto; }
-.db-card-post img { width: 100%; border-radius: 4px; }
-.db-card-title { margin-bottom: 5px; font-size: 18px; }
-.db-card-title a { text-decoration: none !important; }
+.db-card-post { width: 96px; margin-right: 16px; display: flex; flex: 0 0 auto; }
+.db-card-post img { width: 100%; border-radius: 6px; margin: 0 !important; }
+.db-card-title { margin-bottom: 5px; font-size: 1.08rem; font-weight: 600; }
+.db-card-title a { text-decoration: none !important; background-image: none !important; }
 .db-card-abstract,
-.db-card-comment { font-size: 14px; overflow: auto; max-height: 7rem; margin-top: 8px; }
+.db-card-comment { font-size: 0.88rem; color: var(--editorial-muted); overflow: auto; max-height: 7rem; margin-top: 8px; }
 .db-card-cate {
   position: absolute;
   top: 12px;
-  right: 12px;
-  color: var(--editorial-muted);
-  font-size: 12px;
+  right: 14px;
+  color: var(--editorial-accent);
+  background: var(--editorial-quote-bg);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-family: ui-monospace, SFMono-Regular, monospace;
 }
-.rating_nums { font-size: 14px; color: var(--editorial-muted); margin-left: 4px; }
+.rating_nums { font-size: 0.85rem; color: var(--editorial-muted); margin-left: 4px; }
+
+/* ==============================================================================
+   Friends Link Cards (Inspired by nanako.icu/friends/)
+   ============================================================================== */
+.friends-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.1rem;
+  margin: 2rem 0 3rem;
+}
+
+.article-content a.friend-link,
+.prose a.friend-link,
+a.friend-link {
+  display: block;
+  text-decoration: none !important;
+  color: inherit !important;
+  background-image: none !important;
+}
+
+. article-content a.friend-link:hover,
+.prose a.friend-link:hover,
+a.friend-link:hover {
+  background-image: none !important;
+}
+
+.friend-link-div {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.2rem;
+  height: 100%;
+  background-color: var(--editorial-surface);
+  border: 1px solid var(--editorial-line);
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.025);
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.25s ease,
+              border-color 0.25s ease;
+}
+
+.dark .friend-link-div {
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+}
+
+a.friend-link:hover .friend-link-div {
+  transform: translateY(-3px);
+  border-color: var(--editorial-accent);
+  box-shadow: 0 10px 24px -6px rgba(0, 0, 0, 0.08);
+}
+
+.dark a.friend-link:hover .friend-link-div {
+  box-shadow: 0 12px 28px -6px rgba(0, 0, 0, 0.4);
+}
+
+.friend-link-avatar {
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 1px solid var(--editorial-line);
+  background-color: var(--editorial-paper);
+}
+
+.friend-avatar {
+  width: 100% !important;
+  height: 100% !important;
+  margin: 0 !important;
+  border-radius: 50% !important;
+  box-shadow: none !important;
+  border: none !important;
+  object-fit: cover;
+  transition: transform 0.35s ease;
+}
+
+a.friend-link:hover .friend-avatar {
+  transform: scale(1.08) rotate(3deg);
+}
+
+.friend-link-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.friend-name {
+  display: block;
+  font-style: normal;
+  font-size: 1.02rem;
+  font-weight: 600;
+  color: var(--editorial-ink);
+  margin-bottom: 0.22rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color 0.2s ease;
+}
+
+a.friend-link:hover .friend-name {
+  color: var(--editorial-accent);
+}
+
+.friend-bio {
+  margin: 0 !important;
+  font-size: 0.84rem;
+  line-height: 1.48 !important;
+  color: var(--editorial-muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-align: start !important;
+}
+
+.friends-apply-box {
+  margin-top: 2.5rem;
+  padding: 1.4rem 1.6rem;
+  background-color: var(--editorial-surface);
+  border: 1px dashed var(--editorial-line);
+  border-radius: 12px;
+}
+
+.friends-apply-box h3 {
+  margin-top: 0 !important;
+  margin-bottom: 0.6rem !important;
+  font-size: 1.15rem;
+}
+
+.friends-apply-box p {
+  margin-bottom: 0.8rem !important;
+  font-size: 0.94rem;
+  color: var(--editorial-muted);
+}

@@ -1,20 +1,6 @@
 /* ==============================================================================
-   Active Unified CSS Bundle for Blowfish Theme
+   Blowfish Custom CSS Hook
+   Note: Full custom stylesheets (fonts, heti, components, editorial, homepage,
+   memos, gallery) are concatenated via Hugo Pipes in layouts/partials/extend-head.html
+   to avoid mid-file @import rules being ignored by browsers.
    ============================================================================== */
-
-/* Font and Chinese typography foundations */
-@import url("fonts.css");
-@import url("heti.min.css");
-
-/* Reusable component styling (Details, APlayer, DB-Card, etc.) */
-@import url("components.css");
-
-/* Core Editorial Magazine Visual Design System */
-@import url("editorial.css");
-@import url("editorial-scale-fix.css");
-
-/* Microblog & Quotes Sheet System */
-@import url("memos.css");
-
-/* EXIF Photography Gallery System */
-@import url("gallery.css");
