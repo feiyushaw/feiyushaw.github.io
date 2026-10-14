@@ -1,89 +1,104 @@
 /* ==============================================================================
-   Editorial / Research Notebook Typography & Visual System
-   Enhanced with principles from "Butterick's Practical Typography" & Web Typography
+   Editorial / Research Notebook & nanako.icu Inspired Visual System
    ============================================================================== */
 
 :root {
-  --editorial-paper: #f7f6f2;
-  --editorial-surface: #fbfaf7;
-  --editorial-ink: #242424;
-  --editorial-muted: #6e6e6e;
-  --editorial-faint: #9c9a94;
-  --editorial-accent: #465a7a;
-  --editorial-line: #dedbd4;
-  --editorial-code: #efede7;
-  --editorial-quote-bg: rgba(70, 90, 122, 0.04);
+  --editorial-paper: #faf8f5;
+  --editorial-surface: #ffffff;
+  --editorial-ink: #2c2a29;
+  --editorial-muted: #6e6a66;
+  --editorial-faint: #9e9a95;
+  --editorial-accent: #b57c78;
+  --editorial-accent-soft: rgba(181, 124, 120, 0.26);
+  --editorial-highlight: rgba(181, 124, 120, 0.16);
+  --editorial-line: #ebe6df;
+  --editorial-code: #f4f1ec;
+  --editorial-quote-bg: rgba(181, 124, 120, 0.06);
+  --editorial-grid: rgba(44, 42, 41, 0.022);
 }
 
 .dark {
-  --editorial-paper: #1c1c1a;
-  --editorial-surface: #242422;
-  --editorial-ink: #edeae2;
-  --editorial-muted: #a4a198;
-  --editorial-faint: #78756e;
-  --editorial-accent: #9aaac6;
-  --editorial-line: #383733;
-  --editorial-code: #282724;
-  --editorial-quote-bg: rgba(154, 170, 198, 0.06);
+  --editorial-paper: #1e1d1b;
+  --editorial-surface: #262522;
+  --editorial-ink: #ebe7e0;
+  --editorial-muted: #a6a29a;
+  --editorial-faint: #78746d;
+  --editorial-accent: #d4a574;
+  --editorial-accent-soft: rgba(212, 165, 116, 0.28);
+  --editorial-highlight: rgba(212, 165, 116, 0.2);
+  --editorial-line: #383632;
+  --editorial-code: #292724;
+  --editorial-quote-bg: rgba(212, 165, 116, 0.08);
+  --editorial-grid: rgba(255, 255, 255, 0.02);
 }
 
-/* 全局基础排版与现代 Web Typography 规则 */
+/* 全局基础排版与纸张方格纹理 */
 body {
   color: var(--editorial-ink) !important;
   background-color: var(--editorial-paper) !important;
+  background-image:
+    linear-gradient(var(--editorial-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--editorial-grid) 1px, transparent 1px) !important;
+  background-size: 24px 24px !important;
   font-family: 'Commissioner', 'FangZhengShuSong', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-  
-  /* 现代排版：孤字不成行 + 原生中西文自动字距 */
   text-wrap: pretty;
-  text-autospace: normal;
-  text-spacing-trim: normal;
   overflow-wrap: break-word;
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
-/* 结构边框 */
+/* 顶部导航栏与页脚静谧毛玻璃效果 */
 nav,
 header,
 footer {
   border-color: var(--editorial-line) !important;
 }
 
-/* 标题层级体系 (Heading Hierarchy & Scale) */
-h1, h2, h3, h4, h5, h6 {
-  color: var(--editorial-ink) !important;
-  font-family: 'FangZhengShuSong', 'HanaMinA', 'Fraunces', Georgia, serif;
-  font-weight: 600;
-  text-wrap: balance;
-  letter-spacing: -0.02em;
+.main-menu {
+  background-color: color-mix(in srgb, var(--editorial-paper) 88%, transparent) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
-/* 全文排版容器 (Prose System) */
+/* 标题层级体系 */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--editorial-ink) !important;
+  font-family: 'Fraunces', 'HanaMinA', 'FangZhengShuSong', Georgia, serif;
+  font-weight: 600;
+  text-wrap: balance;
+  letter-spacing: -0.018em;
+}
+
+/* 全文排版容器 */
 .prose {
   color: var(--editorial-ink) !important;
   font-size: 1.05rem;
-  line-height: 1.82;
-}
-
-/* 段落间距与呼吸感 */
-.prose p,
-.article-content p {
-  margin-top: 0;
-  margin-bottom: 1.35rem;
   line-height: 1.85;
 }
 
-/* 中文强调与加粗规范 */
+.prose p,
+.article-content p {
+  margin-top: 0;
+  margin-bottom: 1.45rem;
+  line-height: 1.88;
+}
+
+/* 重点加粗：参考 nanako.icu 柔和手账马克笔底色 */
 .prose strong,
 .prose b,
 .article-content strong,
 .article-content b {
   color: var(--editorial-ink) !important;
-  font-weight: 700;
+  background-color: var(--editorial-highlight) !important;
+  font-weight: 600 !important;
+  padding: 0.08rem 0.3rem !important;
+  margin: 0 1px !important;
+  border-radius: 3px !important;
 }
 
-/* 中文斜体规范化：避免假斜体，采用温和加粗或着重色 */
+/* 中文斜体规范化 */
 .prose em,
 .prose i,
 .article-content em,
@@ -93,21 +108,26 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--editorial-ink);
 }
 
-/* 链接排版：符合 WCAG 可访问性与雅致下划线 */
-.prose a,
-.article-content a {
+/* 正文与目录链接：还原 nanako.icu 荧光笔半透明上浮下划线动效 */
+.prose a:not(.friend-link),
+.article-content a:not(.friend-link),
+.editorial-toc #TableOfContents a {
   color: var(--editorial-ink) !important;
-  text-decoration: underline;
-  text-decoration-color: var(--editorial-accent);
-  text-decoration-thickness: 1px;
-  text-underline-offset: 3.5px;
-  transition: all 0.18s ease;
+  text-decoration: none !important;
+  border-bottom: none !important;
+  background-image: linear-gradient(to top, var(--editorial-accent-soft) 32%, transparent 32%) !important;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  padding: 0 0.1rem;
+  border-radius: 2px;
+  transition: background-image 0.25s ease, color 0.2s ease;
 }
 
-.prose a:hover,
-.article-content a:hover {
-  color: var(--editorial-accent) !important;
-  text-decoration-thickness: 2px;
+.prose a:not(.friend-link):hover,
+.article-content a:not(.friend-link):hover,
+.editorial-toc #TableOfContents a:hover {
+  color: var(--editorial-ink) !important;
+  background-image: linear-gradient(to top, var(--editorial-accent-soft) 86%, transparent 86%) !important;
 }
 
 /* 行内代码与代码块排版 */
@@ -115,10 +135,10 @@ h1, h2, h3, h4, h5, h6 {
 .article-content code {
   background-color: var(--editorial-code) !important;
   color: var(--editorial-ink) !important;
-  padding: 0.18rem 0.42rem;
+  padding: 0.16rem 0.4rem;
   border-radius: 4px;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 0.88em;
+  font-size: 0.875em;
   border: 1px solid var(--editorial-line);
 }
 
@@ -126,11 +146,11 @@ h1, h2, h3, h4, h5, h6 {
 .article-content pre {
   background-color: var(--editorial-code) !important;
   border: 1px solid var(--editorial-line);
-  border-radius: 6px;
-  padding: 1.2rem 1.4rem;
+  border-radius: 8px;
+  padding: 1.15rem 1.35rem;
   overflow-x: auto;
   margin: 1.6rem 0;
-  line-height: 1.6;
+  line-height: 1.65;
 }
 
 .prose pre code,
@@ -142,17 +162,18 @@ h1, h2, h3, h4, h5, h6 {
   color: inherit !important;
 }
 
-/* 块引用排版 (Blockquote - Academic Style) */
+/* 引用块排版 */
 .prose blockquote,
 .article-content blockquote {
   border-left: 3px solid var(--editorial-accent) !important;
-  background-color: var(--editorial-quote-bg);
-  padding: 0.9rem 1.4rem;
-  margin: 1.8rem 0;
-  border-radius: 0 6px 6px 0;
-  color: var(--editorial-muted);
+  background-color: var(--editorial-quote-bg) !important;
+  padding: 0.95rem 1.35rem !important;
+  margin: 1.8rem 0 !important;
+  border-radius: 0 8px 8px 0;
+  color: var(--editorial-muted) !important;
   font-size: 0.98rem;
-  line-height: 1.8;
+  line-height: 1.82;
+  font-style: normal;
 }
 
 .prose blockquote p:last-child,
@@ -160,7 +181,7 @@ h1, h2, h3, h4, h5, h6 {
   margin-bottom: 0;
 }
 
-/* 表格排版 (古典学术三线表设计) */
+/* 表格排版 */
 .prose table,
 .article-content table {
   width: 100%;
@@ -193,65 +214,71 @@ h1, h2, h3, h4, h5, h6 {
   border-bottom: none;
 }
 
-/* 列表排版 (Lists) */
+/* 列表排版 */
 .prose ul,
 .prose ol,
 .article-content ul,
 .article-content ol {
   padding-left: 1.5rem;
-  margin-bottom: 1.35rem;
+  margin-bottom: 1.4rem;
 }
 
 .prose li,
 .article-content li {
-  margin-bottom: 0.4rem;
-  line-height: 1.75;
+  margin-bottom: 0.45rem;
+  line-height: 1.8;
 }
 
 /* ------------------------------
-   文章列表与归档流 (Editorial List)
+   文章列表与归档流 (Editorial List & Archives)
    ------------------------------ */
 .editorial-list {
-  width: min(100%, 780px);
+  width: min(100%, 820px);
   margin: 0 auto;
-  padding: 3rem 1rem 5rem;
+  padding: 2.5rem 1rem 5rem;
 }
 
 .editorial-list__header {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
+  gap: 1.5rem;
   margin-bottom: 2.5rem;
   border-bottom: 1px solid var(--editorial-line);
-  padding-bottom: 1.2rem;
+  padding-bottom: 1.1rem;
 }
 
 .editorial-list__title {
-  font-size: clamp(2rem, 3.8vw, 2.8rem);
+  font-size: clamp(2rem, 3.8vw, 2.75rem);
   margin: 0;
+  line-height: 1.1;
 }
 
 .editorial-list__count {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 0.8rem;
-  color: var(--editorial-muted);
-  letter-spacing: 0.06em;
+  font-size: 0.78rem;
+  color: var(--editorial-faint);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .editorial-year {
   display: grid;
-  grid-template-columns: 80px minmax(0, 1fr);
-  gap: 1.5rem;
-  margin-bottom: 2rem;
+  grid-template-columns: 76px minmax(0, 1fr);
+  gap: 1.6rem;
+  margin-bottom: 2.25rem;
 }
 
 .editorial-year__label {
+  position: sticky;
+  top: 6rem;
+  align-self: start;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 1.3rem;
+  font-size: 1.15rem;
   font-weight: 600;
-  color: var(--editorial-accent);
+  color: var(--editorial-accent) !important;
   margin: 0;
-  padding-top: 0.5rem;
+  padding-top: 0.9rem;
 }
 
 .editorial-year__entries {
@@ -262,9 +289,16 @@ h1, h2, h3, h4, h5, h6 {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  padding: 1.1rem 0;
-  border-bottom: 1px dashed var(--editorial-line);
-  transition: all 0.2s ease;
+  gap: 1.5rem;
+  padding: 1.15rem 0;
+  border-bottom: 1px dashed var(--editorial-line) !important;
+  background: transparent !important;
+  transition: transform 0.2s ease;
+}
+
+.editorial-entry:hover {
+  background: transparent !important;
+  transform: translateX(3px);
 }
 
 .editorial-entry:hover .editorial-entry__title a {
@@ -274,46 +308,56 @@ h1, h2, h3, h4, h5, h6 {
 .editorial-entry__main {
   flex-grow: 1;
   min-width: 0;
-  padding-right: 1.5rem;
 }
 
 .editorial-entry__title {
-  font-size: 1.12rem;
-  font-weight: 500;
-  margin: 0 0 0.4rem;
+  font-size: 1.14rem;
+  font-weight: 550;
+  margin: 0 0 0.35rem;
   font-family: 'Commissioner', 'FangZhengShuSong', sans-serif;
 }
 
 .editorial-entry__title a {
   color: var(--editorial-ink) !important;
   text-decoration: none !important;
+  background-image: none !important;
   transition: color 0.18s ease;
 }
 
 .editorial-entry__summary {
   font-size: 0.88rem;
   color: var(--editorial-muted);
-  margin: 0 0 0.6rem;
-  line-height: 1.6;
+  margin: 0.35rem 0 0.55rem;
+  line-height: 1.68;
 }
 
 .editorial-entry__topics {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.4rem;
+  gap: 0.5rem;
 }
 
 .editorial-entry__topic {
   font-size: 0.75rem;
-  color: var(--editorial-accent) !important;
+  color: var(--editorial-muted) !important;
   text-decoration: none !important;
+  background-image: none !important;
   font-family: ui-monospace, SFMono-Regular, monospace;
+  transition: color 0.18s ease;
+}
+
+.editorial-entry__topic:hover {
+  color: var(--editorial-accent) !important;
 }
 
 .editorial-entry__meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
   flex-shrink: 0;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   color: var(--editorial-faint);
   text-align: right;
   white-space: nowrap;
@@ -323,21 +367,24 @@ h1, h2, h3, h4, h5, h6 {
    文章正文页 (Single Article Layout)
    ------------------------------ */
 .editorial-article {
-  width: min(100%, 760px);
+  width: min(100%, 1040px);
   margin-inline: auto;
-  padding: 2.5rem 1rem 5rem;
+  padding: 2rem 1.25rem 5rem;
+  border-bottom: 0 !important;
+  background: transparent !important;
 }
 
 .editorial-article__header {
-  margin-bottom: 2.8rem;
+  width: min(100%, 720px);
+  margin: 1.5rem 0 2.4rem;
   border-bottom: 1px solid var(--editorial-line);
-  padding-bottom: 1.8rem;
+  padding-bottom: 1.6rem;
 }
 
 .editorial-article__title {
-  font-size: clamp(2.1rem, 4vw, 3.1rem);
+  font-size: clamp(2rem, 3.8vw, 2.85rem);
   font-weight: 600;
-  line-height: 1.18;
+  line-height: 1.2;
   margin: 0 0 1rem;
   letter-spacing: -0.025em;
   text-wrap: balance;
@@ -347,66 +394,115 @@ h1, h2, h3, h4, h5, h6 {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: 0.85rem;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 0.8rem;
+  font-size: 0.82rem;
   color: var(--editorial-muted);
 }
 
+.editorial-article__layout {
+  position: relative;
+  display: grid !important;
+  grid-template-columns: minmax(0, 720px) minmax(180px, 230px);
+  justify-content: space-between;
+  align-items: start;
+  gap: clamp(2rem, 4.5vw, 4rem);
+  width: 100%;
+  max-width: none !important;
+}
+
+.editorial-article__main {
+  min-width: 0;
+  width: 100%;
+  max-width: 720px !important;
+}
+
+.editorial-article__content {
+  width: 100%;
+  max-width: 720px !important;
+  font-size: 1.05rem;
+  line-height: 1.88;
+}
+
 .editorial-article__content h2 {
-  font-size: 1.55rem;
-  margin-top: 3rem;
+  font-size: 1.5rem;
+  margin-top: 2.8rem;
   margin-bottom: 1rem;
   border-bottom: 1px solid var(--editorial-line);
   padding-bottom: 0.4rem;
 }
 
 .editorial-article__content h3 {
-  font-size: 1.25rem;
-  margin-top: 2.2rem;
+  font-size: 1.22rem;
+  margin-top: 2.1rem;
   margin-bottom: 0.8rem;
 }
 
-.editorial-article__content img,
-.editorial-article__content figure {
-  border-radius: 6px;
-  margin: 2rem 0;
+.editorial-article__content img {
+  border-radius: 8px;
+  margin: 1.8rem auto;
   max-width: 100%;
+  height: auto;
+  display: block;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.06);
+  border: 1px solid var(--editorial-line);
+}
+
+.dark .editorial-article__content img {
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
+}
+
+.editorial-article__content figure {
+  margin: 2rem 0;
+  text-align: center;
 }
 
 .editorial-article__content figcaption {
   font-size: 0.84rem;
   color: var(--editorial-muted);
   text-align: center;
-  margin-top: 0.5rem;
-  font-family: ui-monospace, SFMono-Regular, monospace;
+  margin-top: 0.55rem;
+  font-family: 'FangZhengShuSong', 'Commissioner', serif;
 }
 
-/* 文章目录 (Table of Contents) */
+/* 右侧悬浮文章目录 (Sticky Right Rail TOC like nanako.icu) */
 .editorial-toc {
-  margin: 2rem 0;
-  padding: 1rem 1.4rem;
-  background-color: var(--editorial-surface);
-  border: 1px solid var(--editorial-line);
-  border-radius: 6px;
+  order: 2;
+  min-width: 0;
+  padding: 0 !important;
+  margin: 0 !important;
+  background: transparent !important;
+  border: none !important;
+}
+
+.editorial-toc .toc {
+  padding-inline-start: 0 !important;
+  border-inline-start: 0 !important;
+}
+
+.editorial-toc #TableOfContents {
+  border-left: 1.5px solid var(--editorial-line);
+  padding-left: 1rem;
 }
 
 .editorial-toc #TableOfContents ul {
   list-style: none;
-  padding-left: 1rem;
+  padding-left: 0.75rem;
   margin: 0;
 }
 
-.editorial-toc #TableOfContents a {
-  color: var(--editorial-muted) !important;
-  text-decoration: none !important;
-  font-size: 0.88rem;
-  line-height: 1.8;
-  transition: color 0.18s ease;
+.editorial-toc #TableOfContents > ul {
+  padding-left: 0;
 }
 
-.editorial-toc #TableOfContents a:hover {
-  color: var(--editorial-accent) !important;
+.editorial-toc #TableOfContents li {
+  margin-bottom: 0.45rem;
+  line-height: 1.5;
+}
+
+.editorial-toc #TableOfContents a {
+  font-size: 0.84rem;
+  line-height: 1.5;
 }
 
 /* 底部标签 */
@@ -415,26 +511,50 @@ h1, h2, h3, h4, h5, h6 {
   flex-wrap: wrap;
   gap: 0.5rem;
   margin-top: 3rem;
-  padding-top: 1.5rem;
+  padding-top: 1.4rem;
   border-top: 1px solid var(--editorial-line);
 }
 
 .editorial-article__footer-tags a {
-  padding: 0.25rem 0.65rem;
-  background-color: var(--editorial-surface);
-  border: 1px solid var(--editorial-line);
-  border-radius: 4px;
-  font-size: 0.8rem;
-  color: var(--editorial-accent) !important;
+  padding: 0.22rem 0.65rem !important;
+  background-color: var(--editorial-surface) !important;
+  background-image: none !important;
+  border: 1px solid var(--editorial-line) !important;
+  border-radius: 6px !important;
+  font-size: 0.78rem !important;
+  color: var(--editorial-muted) !important;
   text-decoration: none !important;
   font-family: ui-monospace, SFMono-Regular, monospace;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.editorial-article__footer-tags a:hover {
+  border-color: var(--editorial-accent) !important;
+  color: var(--editorial-accent) !important;
 }
 
 /* 响应式适配 */
+@media (max-width: 1023px) {
+  .editorial-article__layout {
+    display: block !important;
+  }
+
+  .editorial-article__header,
+  .editorial-article__main,
+  .editorial-article__content {
+    max-width: 720px !important;
+    margin-inline: auto;
+  }
+
+  .editorial-toc {
+    display: none;
+  }
+}
+
 @media (max-width: 768px) {
   .editorial-list,
   .editorial-article {
-    padding: 1.8rem 0.75rem 3.5rem;
+    padding: 1.6rem 0.75rem 3.5rem;
   }
 
   .editorial-year {
@@ -442,13 +562,20 @@ h1, h2, h3, h4, h5, h6 {
     gap: 0.5rem;
   }
 
+  .editorial-year__label {
+    position: static;
+  }
+
   .editorial-entry {
     flex-direction: column;
     align-items: flex-start;
-    gap: 0.5rem;
+    gap: 0.45rem;
   }
 
   .editorial-entry__meta {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
     text-align: left;
   }
 }

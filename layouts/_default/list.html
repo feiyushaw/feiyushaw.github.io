@@ -1,8 +1,4 @@
 {{ define "main" }}
-{{ $editorialCSS := resources.Get "css/editorial.css" }}
-{{ if $editorialCSS }}
-  <style>{{ $editorialCSS.Content | safeCSS }}</style>
-{{ end }}
 <div class="w-full flex justify-center">
   <section class="editorial-list w-full">
     <header class="editorial-list__header">
@@ -34,14 +30,14 @@
                   {{ with .Params.tags }}
                     <div class="editorial-entry__topics" aria-label="Topics">
                       {{ range first 4 . }}
-                        <a class="editorial-entry__topic" href="{{ (printf "/tags/%s" . | urlize) | relLangURL }}">{{ . }}</a>
+                        <a class="editorial-entry__topic" href="{{ (printf "/tags/%s" . | urlize) | relLangURL }}">#{{ . }}</a>
                       {{ end }}
                     </div>
                   {{ end }}
                 </div>
 
                 <div class="editorial-entry__meta">
-                  <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "02 Jan" }}</time>
+                  <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "01-02" }}</time>
                   <span>{{ .ReadingTime }} min</span>
                 </div>
               </article>

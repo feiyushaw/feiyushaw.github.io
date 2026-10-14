@@ -1,68 +1,22 @@
-/* Conservative scale corrections for the editorial redesign.
-   This is the final calibration layer; legacy global theme CSS is no longer loaded. */
+/* Fine-grained scale calibration layer */
 
-:root {
-  --editorial-grid: rgba(41, 41, 41, 0.010);
-}
-
-.dark {
-  --editorial-grid: rgba(255, 255, 255, 0.010);
-}
-
-body {
-  background-size: 26px 26px !important;
-}
-
-/* Lists */
 .editorial-list {
   width: min(100%, 820px);
   margin-inline: auto;
 }
 
-.editorial-list__header {
-  margin-bottom: 2.25rem;
+.editorial-article {
+  width: min(100%, 1040px);
+  margin-inline: auto;
 }
 
-.editorial-list__title {
-  font-size: clamp(2.05rem, 4vw, 3.15rem);
-  line-height: 1.05;
-  letter-spacing: -0.03em;
-}
-
-.editorial-year {
-  grid-template-columns: 70px minmax(0, 1fr);
-  gap: 1.4rem;
-}
-
-.editorial-entry {
-  padding: 1.05rem 0 1.15rem;
-}
-
-.editorial-entry__title {
-  font-size: clamp(1.04rem, 1.65vw, 1.24rem);
-}
-
-.editorial-entry__summary {
-  margin-top: 0.4rem;
-  font-size: 0.86rem;
-  line-height: 1.65;
-}
-
-/* Article */
 .editorial-article__header {
   width: min(100%, 720px);
-  margin: 2.3rem auto 2rem;
-}
-
-.editorial-article__title {
-  font-size: clamp(2.05rem, 4vw, 3.35rem);
-  line-height: 1.1;
-  letter-spacing: -0.032em;
 }
 
 .editorial-article__layout {
-  grid-template-columns: minmax(0, 720px) minmax(170px, 210px);
-  gap: clamp(2rem, 4vw, 3.5rem);
+  grid-template-columns: minmax(0, 720px) minmax(180px, 230px);
+  gap: clamp(2rem, 4vw, 3.75rem);
 }
 
 .editorial-article__main,
@@ -70,30 +24,21 @@ body {
   max-width: 720px !important;
 }
 
-.editorial-article__content {
-  font-size: 1.01rem;
-  line-height: 1.82;
-}
-
 @media (max-width: 720px) {
-  body {
-    background-size: 24px 24px !important;
-  }
-
   .editorial-list {
     width: 100%;
   }
 
   .editorial-list__title {
-    font-size: 2.2rem;
+    font-size: 2.15rem;
   }
 
   .editorial-article__title {
-    font-size: clamp(1.95rem, 9vw, 2.65rem);
+    font-size: clamp(1.85rem, 8.5vw, 2.5rem);
   }
 
   .editorial-article__content {
-    font-size: 0.98rem;
-    line-height: 1.76;
+    font-size: 1rem;
+    line-height: 1.82;
   }
 }
