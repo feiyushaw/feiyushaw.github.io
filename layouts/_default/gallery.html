@@ -1,9 +1,5 @@
 {{ define "main" }}
 {{ $photos := site.Data.photos }}
-{{ $galleryStyle := resources.Get "css/gallery.css" }}
-{{ if $galleryStyle }}
-  <style>{{ $galleryStyle.Content | safeCSS }}</style>
-{{ end }}
 
 <div class="gallery-container">
   <!-- 页面顶栏 Header -->
@@ -94,7 +90,7 @@
                 src="{{ .url }}" 
                 alt="{{ .title | default (printf "Photo %d" (add $index 1)) }}" 
                 loading="lazy" 
-                class="photo-card__img" />
+                class="photo-card__img nozoom" />
               <div class="photo-card__hover-overlay">
                 <span class="photo-card__zoom-badge">
                   <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none">
@@ -196,7 +192,7 @@
 
     <div class="gallery-modal__body">
       <div class="gallery-modal__image-wrapper">
-        <img id="modal-img" src="" alt="Photo Fullscreen" />
+        <img id="modal-img" src="" alt="Photo Fullscreen" class="nozoom" />
       </div>
 
       <!-- 浮层 EXIF 信息栏 -->

@@ -1,5 +1,9 @@
 {{ define "main" }}
-{{ $memos := site.Data.memos }}
+{{ $rawMemos := site.Data.memos }}
+{{ $pinnedMemos := where $rawMemos "pinned" true }}
+{{ $normalMemos := where $rawMemos "pinned" "ne" true }}
+{{ $memos := $pinnedMemos | append $normalMemos }}
+
 {{ $authorImage := "/img/avatar.png" }}
 {{ with resources.Get (site.Params.author.image | default "img/avatar.png") }}
   {{ $authorImage = .RelPermalink }}
@@ -7,10 +11,6 @@
   {{ $authorImage = (site.Params.author.image | default "img/avatar.png") | relURL }}
 {{ end }}
 {{ $authorName := site.Params.author.name | default site.Title }}
-{{ $memosStyle := resources.Get "css/memos.css" }}
-{{ if $memosStyle }}
-  <style>{{ $memosStyle.Content | safeCSS }}</style>
-{{ end }}
 
 <div class="memos-container">
   <!-- 页面头部 -->
@@ -29,16 +29,16 @@
   <!-- 作者看板与统计卡片 -->
   <section class="memos-profile-card" aria-label="Author Profile & Stats">
     <div class="memos-profile-card__user">
-      <img src="{{ $authorImage | relURL }}" alt="{{ $authorName }}" class="memos-profile-card__avatar" style="width:52px;height:52px;border-radius:50%;object-fit:cover;" />
+      <img src="{{ $authorImage | relURL }}" alt="{{ $authorName }}" class="memos-profile-card__avatar nozoom" />
       <div class="memos-profile-card__info">
         <div class="memos-profile-card__name-row">
           <span class="memos-profile-card__name">{{ $authorName }}</span>
-          <span class="memos-profile-card__badge">Live Feed</span>
+          <span class="memos-profile-card__badge">Notebook</span>
         </div>
-        <p class="memos-profile-card__bio">短句、书摘与即刻记录 · 自主可控的个人微语录</p>
+        <p class="memos-profile-card__bio">短句、书摘与即刻记录 · 支持跨设备密码直发</p>
       </div>
     </div>
-    
+
     <div class="memos-profile-card__right">
       <div class="memos-profile-card__stats">
         <div class="memos-stat-item">
@@ -61,20 +61,21 @@
         </div>
       </div>
 
-      <!-- 在线发布与设置触发按钮 -->
+      <!-- 在线发布与密码保险箱按钮 -->
       <div class="memos-publish-actions">
-        <button type="button" class="memos-btn-publish" onclick="openPublishModal()" title="在线写微语">
+        <button type="button" class="memos-btn-publish" onclick="openPublishModal()" title="在线写微语 (快捷键 Cmd/Ctrl + K)">
           <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none">
             <path d="M12 20h9"></path>
             <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
           </svg>
           <span>发微语</span>
         </button>
-        <button type="button" class="memos-btn-config" onclick="openAuthModal()" title="发布授权与密码设置">
+        <button type="button" class="memos-btn-config" onclick="openAuthModal()" title="设置或解锁发布密码">
           <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none">
-            <circle cx="12" cy="12" r="3"></circle>
-            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
           </svg>
+          <span id="auth-status-btn-text">密码设置</span>
         </button>
       </div>
     </div>
@@ -82,17 +83,15 @@
 
   <!-- 搜索与标签过滤工具栏 -->
   <section class="memos-toolbar" aria-label="Filter and Search">
-    <!-- 搜索框 -->
     <div class="memos-search-box">
       <svg class="memos-search-icon" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="11" cy="11" r="8"></circle>
         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
       </svg>
-      <input type="text" id="memos-search-input" class="memos-search-input" placeholder="搜索微语、书摘或作者..." aria-label="Search memos" />
+      <input type="text" id="memos-search-input" class="memos-search-input" placeholder="搜索微语正文、书名或原作者..." aria-label="Search memos" />
       <button type="button" id="memos-search-clear" class="memos-search-clear" aria-label="Clear search" style="display: none;">&times;</button>
     </div>
 
-    <!-- 标签过滤器 -->
     {{ if gt (len $uniqueTags) 0 }}
     <div class="memos-tags-bar" id="memos-tags-bar">
       <button type="button" class="memos-tag-btn active" data-tag="all">全部 <span class="memos-tag-count">({{ len $memos }})</span></button>
@@ -103,13 +102,13 @@
             {{ $count = add $count 1 }}
           {{ end }}
         {{ end }}
-        <button type="button" class="memos-tag-btn" data-tag="{{ $tag }}">{{ $tag }} <span class="memos-tag-count">({{ $count }})</span></button>
+        <button type="button" class="memos-tag-btn" data-tag="{{ $tag }}">#{{ $tag }} <span class="memos-tag-count">({{ $count }})</span></button>
       {{ end }}
     </div>
     {{ end }}
   </section>
 
-  <!-- 微语时间轴/列表流 -->
+  <!-- 微语手账卡片流 -->
   <main class="memos-stream" id="memos-stream">
     {{ if $memos }}
       {{ range $index, $memo := $memos }}
@@ -118,26 +117,29 @@
         {{ with .tags }}
           {{ $tagsStr = delimit . "," }}
         {{ end }}
+        {{ $imagesStr := "" }}
+        {{ with .images }}
+          {{ $imagesStr = delimit . "\n" }}
+        {{ end }}
 
-        <article 
-          class="memo-card{{ if .pinned }} memo-card--pinned{{ end }}" 
+        <article
+          class="memo-card{{ if .pinned }} memo-card--pinned{{ end }}"
           id="{{ $id }}"
           data-id="{{ $id }}"
+          data-date="{{ .date }}"
+          data-pinned="{{ if .pinned }}true{{ else }}false{{ end }}"
+          data-raw-content="{{ .content }}"
+          data-source="{{ .source }}"
+          data-author="{{ .author }}"
+          data-device="{{ .device }}"
           data-tags="{{ $tagsStr }}"
+          data-images="{{ $imagesStr }}"
           data-search="{{ .content }} {{ .source }} {{ .author }} {{ $tagsStr }}">
-          
-          <!-- 左侧头像 -->
-          <div class="memo-card__avatar-col">
-            <img src="{{ $authorImage | relURL }}" alt="{{ $authorName }}" class="memo-card__avatar" style="width:40px;height:40px;border-radius:50%;object-fit:cover;" />
-            <div class="memo-card__line"></div>
-          </div>
 
-          <!-- 右侧内容主体 -->
           <div class="memo-card__body">
-            <!-- 头部元数据 -->
+            <!-- 头部：日期与设备/置顶标记 -->
             <header class="memo-card__header">
-              <div class="memo-card__author-info">
-                <span class="memo-card__author-name">{{ $authorName }}</span>
+              <div class="memo-card__meta-left">
                 {{ if .pinned }}
                   <span class="memo-badge memo-badge--pinned">
                     <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none">
@@ -147,47 +149,45 @@
                     置顶
                   </span>
                 {{ end }}
+                {{ with .date }}
+                  <time class="memo-time" datetime="{{ . }}" title="{{ . }}">{{ . }}</time>
+                {{ end }}
               </div>
 
               <div class="memo-card__meta-right">
                 {{ with .device }}
-                  <span class="memo-device" title="发布设备: {{ . }}">
+                  <span class="memo-device" title="发布来源: {{ . }}">
                     {{ if eq . "Mac" }}
-                      <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2" fill="none"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+                      <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
                     {{ else if or (eq . "iPhone") (eq . "Mobile") (eq . "Android") }}
-                      <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2" fill="none"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+                      <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
                     {{ else if or (eq . "微信读书") (eq . "Kindle") (eq . "读书") (eq . "手记") }}
-                      <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2" fill="none"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                      <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
                     {{ else }}
-                      <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                      <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line></svg>
                     {{ end }}
                     {{ . }}
                   </span>
                 {{ end }}
-
-                {{ with .date }}
-                  <time class="memo-time" datetime="{{ . }}" title="{{ . }}">
-                    {{ . }}
-                  </time>
-                {{ end }}
               </div>
             </header>
 
-            <!-- 正文内容 (Markdown 渲染) -->
+            <!-- 正文内容 -->
             <div class="memo-card__content heti">
               {{ .content | markdownify }}
             </div>
 
-            <!-- 书摘/来源出处卡片 (如果有 source 或 author) -->
+            <!-- 书摘/来源出处卡片 -->
             {{ if or .source .author }}
               <div class="memo-source-card">
                 <div class="memo-source-card__icon">
-                  <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none">
+                  <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none">
                     <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
                     <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
                   </svg>
                 </div>
                 <div class="memo-source-card__info">
+                  <span>——</span>
                   {{ with .source }}
                     <span class="memo-source-card__title">{{ . }}</span>
                   {{ end }}
@@ -198,18 +198,18 @@
               </div>
             {{ end }}
 
-            <!-- 配图展示 (如果有 images) -->
+            <!-- 配图展示 -->
             {{ with .images }}
               <div class="memo-gallery memo-gallery--{{ len . }}">
                 {{ range . }}
                   <div class="memo-gallery__item">
-                    <img src="{{ . | relURL }}" alt="配图" loading="lazy" class="memo-gallery__img" onclick="openLightbox(this.src)" />
+                    <img src="{{ . | relURL }}" alt="配图" loading="lazy" class="memo-gallery__img nozoom" onclick="openLightbox(this.src)" />
                   </div>
                 {{ end }}
               </div>
             {{ end }}
 
-            <!-- 底部：标签与快捷操作 -->
+            <!-- 底部：标签与操作按钮 (复制 / 链接 / 编辑 / 删除) -->
             <footer class="memo-card__footer">
               <div class="memo-card__tags">
                 {{ with .tags }}
@@ -220,22 +220,36 @@
               </div>
 
               <div class="memo-card__actions">
-                <!-- 复制文本按钮 -->
-                <button type="button" class="memo-action-btn" title="复制内容" onclick="copyMemoText(this, '{{ $id }}')" aria-label="Copy memo content">
-                  <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none">
+                <button type="button" class="memo-action-btn" title="复制内容" onclick="copyMemoText('{{ $id }}')">
+                  <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2" fill="none">
                     <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                     <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
                   </svg>
-                  <span class="memo-action-text">复制</span>
+                  <span>复制</span>
                 </button>
 
-                <!-- 复制链接按钮 -->
-                <button type="button" class="memo-action-btn" title="复制直达链接" onclick="copyMemoLink(this, '{{ $id }}')" aria-label="Copy memo link">
-                  <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none">
+                <button type="button" class="memo-action-btn" title="复制直达链接" onclick="copyMemoLink('{{ $id }}')">
+                  <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2" fill="none">
                     <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
                     <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
                   </svg>
-                  <span class="memo-action-text">链接</span>
+                  <span>链接</span>
+                </button>
+
+                <button type="button" class="memo-action-btn" title="在线编辑此微语" onclick="openEditMemoModal('{{ $id }}')">
+                  <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2" fill="none">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                  </svg>
+                  <span>编辑</span>
+                </button>
+
+                <button type="button" class="memo-action-btn memo-action-btn--danger" title="在线删除此微语" onclick="handleDeleteMemo('{{ $id }}')">
+                  <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2" fill="none">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
+                  <span>删除</span>
                 </button>
               </div>
             </footer>
@@ -244,11 +258,10 @@
       {{ end }}
     {{ else }}
       <div class="memos-empty">
-        <p>暂无微语记录，在 <code>data/memos.yaml</code> 中添加第一条书摘吧。</p>
+        <p>暂无微语记录，点击右上角「发微语」写下第一条吧。</p>
       </div>
     {{ end }}
 
-    <!-- 筛选无结果提示 -->
     <div class="memos-no-result" id="memos-no-result" style="display: none;">
       <p>没有找到匹配的微语或书摘</p>
       <button type="button" class="memos-reset-btn" onclick="resetFilters()">清除筛选条件</button>
@@ -256,18 +269,21 @@
   </main>
 </div>
 
-<!-- ======================= 在线发布弹窗 Modal ======================= -->
+<!-- ======================= 在线发布 / 编辑微语弹窗 ======================= -->
 <div id="memos-publish-modal" class="memos-modal" style="display: none;" onclick="closeModalOnBackdrop(event, 'memos-publish-modal')">
   <div class="memos-modal__dialog">
     <div class="memos-modal__header">
-      <h3 class="memos-modal__title">发布新微语 / 书摘</h3>
+      <h3 class="memos-modal__title" id="memos-publish-modal-title">发布新微语 / 书摘</h3>
       <button type="button" class="memos-modal__close" onclick="closePublishModal()" aria-label="Close">&times;</button>
     </div>
 
     <form id="memos-publish-form" onsubmit="handlePublishSubmit(event)">
+      <input type="hidden" id="memo-edit-id" value="" />
+      <input type="hidden" id="memo-edit-date" value="" />
+
       <div class="memos-form-group">
         <label for="memo-input-content" class="memos-form-label">微语正文 / 摘录内容 <span class="required">*</span></label>
-        <textarea id="memo-input-content" class="memos-textarea" rows="4" placeholder="写下这一刻的想法、摘录或短句... (支持 Markdown)" required></textarea>
+        <textarea id="memo-input-content" class="memos-textarea" rows="4" placeholder="写下这一刻的想法、摘录或短句... (支持 Markdown 语法)" required></textarea>
       </div>
 
       <div class="memos-form-row">
@@ -293,23 +309,48 @@
       </div>
 
       <div class="memos-form-group">
-        <label for="memo-input-images" class="memos-form-label">配图链接 (选填，换行分隔)</label>
+        <label for="memo-input-images" class="memos-form-label">配图链接 (选填，每行一个 URL)</label>
         <textarea id="memo-input-images" class="memos-input" rows="2" placeholder="https://example.com/photo.jpg"></textarea>
       </div>
 
-      <div class="memos-form-checkbox-row">
+      <div class="memos-form-group" style="margin-bottom: 0.6rem;">
         <label class="memos-checkbox-label">
           <input type="checkbox" id="memo-input-pinned" />
           <span>设为置顶微语</span>
         </label>
       </div>
 
+      <!-- 内置快捷密码验证栏：支持直接输密码一键发布 -->
+      <div class="memos-quick-auth-bar" id="memos-quick-auth-bar">
+        <div class="memos-quick-auth__unlocked" id="quick-auth-unlocked" style="display: none;">
+          <span class="memos-quick-auth__badge">
+            <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+            已解锁发布权限
+          </span>
+          <button type="button" class="memos-btn-secondary" style="padding: 0.2rem 0.55rem; font-size: 0.75rem;" onclick="lockSession()">锁定 / 切换</button>
+        </div>
+
+        <div class="memos-quick-auth__locked" id="quick-auth-locked">
+          <div class="memos-quick-auth__row">
+            <span style="font-size: 0.82rem; font-weight: 500;">🔑 发布密码：</span>
+            <input type="password" id="memo-quick-password" class="memos-input" placeholder="输入你设定的简短发布密码..." autocomplete="current-password" />
+            <label class="memos-checkbox-label" title="勾选后本设备无需每次重复输入密码">
+              <input type="checkbox" id="memo-remember-device" checked />
+              <span>记住设备</span>
+            </label>
+          </div>
+          <small class="memos-form-help" id="quick-auth-hint">
+            首次使用？请先点击左下角「⚙️ 初始化密码保险箱」绑定一次 Token。
+          </small>
+        </div>
+      </div>
+
       <div class="memos-modal__footer">
-        <button type="button" class="memos-btn-secondary" onclick="openAuthModal()">🔑 凭证/密码设置</button>
+        <button type="button" class="memos-btn-secondary" onclick="openAuthModal('setup')">⚙️ 初始化密码保险箱</button>
         <div class="memos-modal__footer-right">
           <button type="button" class="memos-btn-cancel" onclick="closePublishModal()">取消</button>
           <button type="submit" id="memos-btn-submit" class="memos-btn-primary">
-            <span>立即发布</span>
+            <span id="memos-btn-submit-text">立即发布</span>
           </button>
         </div>
       </div>
@@ -317,46 +358,80 @@
   </div>
 </div>
 
-<!-- ======================= 发布凭证与密码设置弹窗 ======================= -->
+<!-- ======================= 密码解锁与云端加密保险箱设置弹窗 ======================= -->
 <div id="memos-auth-modal" class="memos-modal" style="display: none;" onclick="closeModalOnBackdrop(event, 'memos-auth-modal')">
   <div class="memos-modal__dialog">
     <div class="memos-modal__header">
-      <h3 class="memos-modal__title">在线发布凭证设置</h3>
+      <h3 class="memos-modal__title">发布密码与云端加密保险箱</h3>
       <button type="button" class="memos-modal__close" onclick="closeAuthModal()" aria-label="Close">&times;</button>
     </div>
 
-    <form id="memos-auth-form" onsubmit="handleAuthSave(event)">
+    <div class="memos-vault-tabs">
+      <button type="button" class="memos-vault-tab active" id="tab-btn-unlock" onclick="switchVaultTab('unlock')">🔑 密码解锁 (日常使用)</button>
+      <button type="button" class="memos-vault-tab" id="tab-btn-setup" onclick="switchVaultTab('setup')">🛡️ 初始化 / 更新密码保险箱</button>
+    </div>
+
+    <!-- Tab 1: 日常简短密码解锁 -->
+    <form id="memos-unlock-form" onsubmit="handlePasswordUnlock(event)">
       <div class="memos-auth-tip">
-        <p>💡 <b>发布原理</b>：在线发布将直接调用 GitHub API 更新仓库中的 <code>data/memos.yaml</code>，并自动触发 GitHub Actions 重新构建部署。凭证仅保存在您当前浏览器的本地 <code>localStorage</code> 中，不会上传到任何第三方。</p>
+        <p>💡 <b>跨设备密码直发</b>：只需输入你设定的简短发布密码，浏览器即可在本地自动解密云端保险箱中的凭证，无需在手机或新电脑上输入冗长的 GitHub Token。</p>
       </div>
 
       <div class="memos-form-group">
-        <label for="auth-repo" class="memos-form-label">GitHub 仓库 (Owner/Repo)</label>
-        <input type="text" id="auth-repo" class="memos-input" placeholder="例如: feiyushaw/feiyushaw.github.io" required />
+        <label for="unlock-password" class="memos-form-label">输入发布密码 <span class="required">*</span></label>
+        <input type="password" id="unlock-password" class="memos-input" placeholder="请输入你的简短发布密码..." required />
       </div>
 
       <div class="memos-form-group">
-        <label for="auth-branch" class="memos-form-label">分支名称</label>
-        <input type="text" id="auth-branch" class="memos-input" placeholder="master" value="master" required />
-      </div>
-
-      <div class="memos-form-group">
-        <label for="auth-token" class="memos-form-label">GitHub Personal Access Token (PAT) <span class="required">*</span></label>
-        <input type="password" id="auth-token" class="memos-input" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" required />
-        <small class="memos-form-help">需要仓库的 <b>Contents: Read and write</b> 权限。<a href="https://github.com/settings/tokens?type=beta" target="_blank" rel="noopener">点击此处去 GitHub 创建 Token &rarr;</a></small>
-      </div>
-
-      <div class="memos-form-group">
-        <label for="auth-worker" class="memos-form-label">或者：自定义 Worker / API 端点 (选填)</label>
-        <input type="url" id="auth-worker" class="memos-input" placeholder="https://your-memos-api.workers.dev" />
-        <small class="memos-form-help">如果您部署了 Cloudflare Worker 代理，可在此填入 Worker URL。</small>
+        <label class="memos-checkbox-label">
+          <input type="checkbox" id="unlock-remember" checked />
+          <span>在此设备长期记住解锁状态（保存在本地 localStorage）</span>
+        </label>
       </div>
 
       <div class="memos-modal__footer">
-        <button type="button" class="memos-btn-danger" onclick="clearAuthCredentials()">清除已存凭证</button>
+        <button type="button" class="memos-btn-danger" onclick="clearAuthCredentials()">清除本机记忆</button>
         <div class="memos-modal__footer-right">
           <button type="button" class="memos-btn-cancel" onclick="closeAuthModal()">取消</button>
-          <button type="submit" class="memos-btn-primary">保存凭证</button>
+          <button type="submit" id="btn-unlock-submit" class="memos-btn-primary">解锁权限</button>
+        </div>
+      </div>
+    </form>
+
+    <!-- Tab 2: 首次初始化或更新云端加密保险箱 -->
+    <form id="memos-setup-form" style="display: none;" onsubmit="handleVaultSetup(event)">
+      <div class="memos-auth-tip">
+        <p>🔒 <b>AES-256-GCM 零知识加密原理</b>：在此输入一次 GitHub Token 并设定你的简短发布密码。浏览器会使用 PBKDF2 (25万次迭代) + AES-256-GCM 算法将 Token 加密为密文并同步到仓库的 <code>static/memos-vault.json</code>。仓库中绝不存储明文 Token，既不会触发 GitHub 吊销，又能让你在任何手机/电脑上只输短密码直接发微语。</p>
+      </div>
+
+      <div class="memos-form-group">
+        <label for="setup-password" class="memos-form-label">设定你的简短发布密码 <span class="required">*</span></label>
+        <input type="password" id="setup-password" class="memos-input" placeholder="例如设定一个好记的 6~16 位专属密码" required />
+        <small class="memos-form-help">以后在手机、iPad 或任何浏览器上发微语，只需输入这个密码即可。</small>
+      </div>
+
+      <div class="memos-form-group">
+        <label for="setup-token" class="memos-form-label">GitHub Personal Access Token (PAT) <span class="required">*</span></label>
+        <input type="password" id="setup-token" class="memos-input" placeholder="ghp_xxx 或 github_pat_xxx" required />
+        <small class="memos-form-help">建议使用仅授权本仓库 <b>Contents: Read and write</b> 权限的 Fine-grained Token。<a href="https://github.com/settings/tokens?type=beta" target="_blank" rel="noopener">去 GitHub 创建 Token &rarr;</a></small>
+      </div>
+
+      <div class="memos-form-row">
+        <div class="memos-form-group">
+          <label for="setup-repo" class="memos-form-label">GitHub 仓库</label>
+          <input type="text" id="setup-repo" class="memos-input" value="feiyushaw/feiyushaw.github.io" required />
+        </div>
+        <div class="memos-form-group">
+          <label for="setup-branch" class="memos-form-label">分支名称</label>
+          <input type="text" id="setup-branch" class="memos-input" value="master" required />
+        </div>
+      </div>
+
+      <div class="memos-modal__footer">
+        <button type="button" class="memos-btn-secondary" onclick="switchVaultTab('unlock')">&larr; 返回密码解锁</button>
+        <div class="memos-modal__footer-right">
+          <button type="button" class="memos-btn-cancel" onclick="closeAuthModal()">取消</button>
+          <button type="submit" id="btn-setup-submit" class="memos-btn-primary">加密并生成云端保险箱</button>
         </div>
       </div>
     </form>
@@ -374,22 +449,186 @@
 <!-- 吐司提示组件 -->
 <div id="memos-toast" class="memos-toast"></div>
 
-<!-- 页面交互与在线发布脚本 -->
 <script>
 (function() {
+  const DEFAULT_REPO = 'feiyushaw/feiyushaw.github.io';
+  const DEFAULT_BRANCH = 'master';
+  const STORAGE_KEY = 'memos_auth_config';
+  const SESSION_KEY = 'memos_session_auth';
+
   const searchInput = document.getElementById('memos-search-input');
   const searchClear = document.getElementById('memos-search-clear');
   const tagButtons = document.querySelectorAll('.memos-tag-btn');
-  const cards = document.querySelectorAll('.memo-card');
-  const noResult = document.getElementById('memos-no-result');
   const totalCountEl = document.getElementById('total-count');
+  const noResult = document.getElementById('memos-no-result');
 
   let currentTag = 'all';
   let currentQuery = '';
+  let cachedVault = null;
+
+  // ==================== 1. Web Crypto API 零知识密码加密保险箱 ====================
+  async function encryptTokenWithPassword(token, password, repo, branch) {
+    const enc = new TextEncoder();
+    const salt = crypto.getRandomValues(new Uint8Array(16));
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    const keyMaterial = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveKey']);
+    const key = await crypto.subtle.deriveKey(
+      { name: 'PBKDF2', salt, iterations: 250000, hash: 'SHA-256' },
+      keyMaterial,
+      { name: 'AES-GCM', length: 256 },
+      false,
+      ['encrypt']
+    );
+    const encrypted = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, enc.encode(token));
+    return {
+      v: 1,
+      initialized: true,
+      repo: repo || DEFAULT_REPO,
+      branch: branch || DEFAULT_BRANCH,
+      salt: btoa(String.fromCharCode(...salt)),
+      iv: btoa(String.fromCharCode(...iv)),
+      data: btoa(String.fromCharCode(...new Uint8Array(encrypted)))
+    };
+  }
+
+  async function decryptTokenWithPassword(vault, password) {
+    if (!vault || !vault.initialized || !vault.data) {
+      throw new Error('云端密码保险箱尚未初始化，请先点击「初始化密码保险箱」绑定一次 GitHub Token。');
+    }
+    try {
+      const enc = new TextEncoder();
+      const dec = new TextDecoder();
+      const salt = Uint8Array.from(atob(vault.salt), c => c.charCodeAt(0));
+      const iv = Uint8Array.from(atob(vault.iv), c => c.charCodeAt(0));
+      const data = Uint8Array.from(atob(vault.data), c => c.charCodeAt(0));
+      const keyMaterial = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveKey']);
+      const key = await crypto.subtle.deriveKey(
+        { name: 'PBKDF2', salt, iterations: 250000, hash: 'SHA-256' },
+        keyMaterial,
+        { name: 'AES-GCM', length: 256 },
+        false,
+        ['decrypt']
+      );
+      const decrypted = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, data);
+      return dec.decode(decrypted);
+    } catch (e) {
+      throw new Error('发布密码错误，请检查后重试');
+    }
+  }
+
+  // 拉取最新云端加密保险箱 (优先拉取 GitHub Raw 最新版本，回退至本站静态文件)
+  async function fetchCloudVault() {
+    if (cachedVault && cachedVault.initialized) return cachedVault;
+    const urls = [
+      `https://raw.githubusercontent.com/${DEFAULT_REPO}/${DEFAULT_BRANCH}/static/memos-vault.json?t=${Date.now()}`,
+      `/memos-vault.json?t=${Date.now()}`
+    ];
+    for (const url of urls) {
+      try {
+        const res = await fetch(url, { cache: 'no-store' });
+        if (res.ok) {
+          const json = await res.json();
+          if (json && json.initialized) {
+            cachedVault = json;
+            return json;
+          }
+          if (!cachedVault) cachedVault = json;
+        }
+      } catch (e) {}
+    }
+    return cachedVault;
+  }
+
+  // 读取当前已解锁的凭证 (支持 localStorage 与 sessionStorage)
+  function getActiveAuth() {
+    try {
+      const local = localStorage.getItem(STORAGE_KEY);
+      if (local) {
+        const parsed = JSON.parse(local);
+        if (parsed && parsed.token) return parsed;
+      }
+      const session = sessionStorage.getItem(SESSION_KEY);
+      if (session) {
+        const parsed = JSON.parse(session);
+        if (parsed && parsed.token) return parsed;
+      }
+    } catch (e) {}
+    return null;
+  }
+
+  function saveActiveAuth(cfg, remember) {
+    if (remember) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(cfg));
+    } else {
+      sessionStorage.setItem(SESSION_KEY, JSON.stringify(cfg));
+    }
+    refreshAuthUI();
+  }
+
+  window.lockSession = function() {
+    localStorage.removeItem(STORAGE_KEY);
+    sessionStorage.removeItem(SESSION_KEY);
+    refreshAuthUI();
+    showToast('🔒 已锁定本机发布权限');
+  };
+
+  async function refreshAuthUI() {
+    const auth = getActiveAuth();
+    const unlockedEl = document.getElementById('quick-auth-unlocked');
+    const lockedEl = document.getElementById('quick-auth-locked');
+    const statusBtnText = document.getElementById('auth-status-btn-text');
+    const hintEl = document.getElementById('quick-auth-hint');
+
+    if (auth && auth.token) {
+      if (unlockedEl) unlockedEl.style.display = 'flex';
+      if (lockedEl) lockedEl.style.display = 'none';
+      if (statusBtnText) statusBtnText.textContent = '已解锁';
+    } else {
+      if (unlockedEl) unlockedEl.style.display = 'none';
+      if (lockedEl) lockedEl.style.display = 'flex';
+      if (statusBtnText) statusBtnText.textContent = '密码设置';
+
+      const vault = await fetchCloudVault();
+      if (hintEl) {
+        if (vault && vault.initialized) {
+          hintEl.textContent = '✨ 云端密码保险箱已就绪，直接输入密码即可发布。';
+        } else {
+          hintEl.textContent = '首次使用？请先点击左下角「⚙️ 初始化密码保险箱」设定你的专属密码。';
+        }
+      }
+    }
+  }
+
+  // 确保获取到有效 Token（若未解锁则自动用输入框中的密码解密）
+  async function ensureUnlockedToken(passwordFromInput, rememberDevice) {
+    const existing = getActiveAuth();
+    if (existing && existing.token) return existing;
+
+    const pwd = (passwordFromInput || '').trim();
+    if (!pwd) {
+      throw new Error('请输入发布密码');
+    }
+
+    const vault = await fetchCloudVault();
+    const token = await decryptTokenWithPassword(vault, pwd);
+    const cfg = {
+      repo: vault.repo || DEFAULT_REPO,
+      branch: vault.branch || DEFAULT_BRANCH,
+      token: token
+    };
+    saveActiveAuth(cfg, rememberDevice);
+    return cfg;
+  }
+
+  // ==================== 2. 筛选与搜索逻辑 ====================
+  function getCards() {
+    return document.querySelectorAll('.memo-card');
+  }
 
   function updateDisplay() {
     let visibleCount = 0;
     const query = currentQuery.toLowerCase().trim();
+    const cards = getCards();
 
     cards.forEach(card => {
       const cardTags = (card.getAttribute('data-tags') || '').split(',');
@@ -399,7 +638,7 @@
       const matchSearch = !query || searchData.includes(query);
 
       if (matchTag && matchSearch) {
-        card.style.display = 'flex';
+        card.style.display = 'block';
         visibleCount++;
       } else {
         card.style.display = 'none';
@@ -409,13 +648,11 @@
     if (noResult) {
       noResult.style.display = visibleCount === 0 ? 'block' : 'none';
     }
-
     if (totalCountEl) {
       totalCountEl.textContent = visibleCount;
     }
   }
 
-  // 标签点击事件
   tagButtons.forEach(btn => {
     btn.addEventListener('click', () => {
       tagButtons.forEach(b => b.classList.remove('active'));
@@ -425,25 +662,18 @@
     });
   });
 
-  // 搜索输入事件：输入搜索词时自动切回全局搜索体验
   if (searchInput) {
     searchInput.addEventListener('input', (e) => {
       currentQuery = e.target.value;
-      if (searchClear) {
-        searchClear.style.display = currentQuery ? 'block' : 'none';
-      }
+      if (searchClear) searchClear.style.display = currentQuery ? 'block' : 'none';
       if (currentQuery && currentTag !== 'all') {
         currentTag = 'all';
-        tagButtons.forEach(b => {
-          if (b.getAttribute('data-tag') === 'all') b.classList.add('active');
-          else b.classList.remove('active');
-        });
+        tagButtons.forEach(b => b.classList.toggle('active', b.getAttribute('data-tag') === 'all'));
       }
       updateDisplay();
     });
   }
 
-  // 清空搜索
   if (searchClear) {
     searchClear.addEventListener('click', () => {
       searchInput.value = '';
@@ -454,14 +684,9 @@
     });
   }
 
-  // 暴露给全局的函数
   window.filterByTag = function(tag) {
     tagButtons.forEach(btn => {
-      if (btn.getAttribute('data-tag') === tag) {
-        btn.classList.add('active');
-      } else {
-        btn.classList.remove('active');
-      }
+      btn.classList.toggle('active', btn.getAttribute('data-tag') === tag);
     });
     currentTag = tag;
     updateDisplay();
@@ -473,55 +698,42 @@
     currentQuery = '';
     if (searchInput) searchInput.value = '';
     if (searchClear) searchClear.style.display = 'none';
-    tagButtons.forEach(b => {
-      if (b.getAttribute('data-tag') === 'all') b.classList.add('active');
-      else b.classList.remove('active');
-    });
+    tagButtons.forEach(b => b.classList.toggle('active', b.getAttribute('data-tag') === 'all'));
     updateDisplay();
   };
 
-  // 复制文本
-  window.copyMemoText = function(btn, id) {
+  // ==================== 3. 复制与灯箱工具 ====================
+  window.copyMemoText = function(id) {
     const card = document.getElementById(id);
     if (!card) return;
     const content = card.querySelector('.memo-card__content');
     const source = card.querySelector('.memo-source-card');
-    
     let text = content ? content.innerText.trim() : '';
-    if (source) {
-      text += '\n\n' + source.innerText.trim();
-    }
+    if (source) text += '\n\n' + source.innerText.trim();
 
     navigator.clipboard.writeText(text).then(() => {
       showToast('已复制内容到剪贴板');
     }).catch(() => {
-      showToast('复制失败，请手动选择复制');
+      showToast('复制失败，请手动复制');
     });
   };
 
-  // 复制链接
-  window.copyMemoLink = function(btn, id) {
+  window.copyMemoLink = function(id) {
     const url = window.location.origin + window.location.pathname + '#' + id;
     navigator.clipboard.writeText(url).then(() => {
-      showToast('已复制微语链接');
-    }).catch(() => {
-      showToast('复制失败');
+      showToast('已复制微语直达链接');
     });
   };
 
-  // 吐司提示
   function showToast(msg) {
     const toast = document.getElementById('memos-toast');
     if (!toast) return;
     toast.textContent = msg;
     toast.classList.add('show');
-    setTimeout(() => {
-      toast.classList.remove('show');
-    }, 2800);
+    setTimeout(() => toast.classList.remove('show'), 2800);
   }
   window.showToast = showToast;
 
-  // 图片灯箱
   window.openLightbox = function(src) {
     const lb = document.getElementById('memos-lightbox');
     const img = document.getElementById('memos-lightbox-img');
@@ -542,25 +754,54 @@
     }
   };
 
-  // 模态弹窗控制
+  // ==================== 4. 弹窗控制 (发布 / 编辑 / 密码保险箱) ====================
+  function detectDeviceName() {
+    const ua = navigator.userAgent;
+    if (/iPhone/i.test(ua)) return 'iPhone';
+    if (/iPad/i.test(ua)) return 'iPad';
+    if (/Macintosh|Mac OS/i.test(ua)) return 'Mac';
+    if (/Android/i.test(ua)) return 'Android';
+    if (/Windows/i.test(ua)) return 'Windows';
+    return 'Web';
+  }
+
   window.openPublishModal = function() {
+    document.getElementById('memos-publish-form').reset();
+    document.getElementById('memo-edit-id').value = '';
+    document.getElementById('memo-edit-date').value = '';
+    document.getElementById('memos-publish-modal-title').textContent = '发布新微语 / 书摘';
+    document.getElementById('memos-btn-submit-text').textContent = '立即发布';
+    document.getElementById('memo-input-device').value = detectDeviceName();
+
+    refreshAuthUI();
     const modal = document.getElementById('memos-publish-modal');
-    if (modal) {
-      // 自动侦测并填充当前设备
-      const deviceInput = document.getElementById('memo-input-device');
-      if (deviceInput && !deviceInput.value) {
-        const ua = navigator.userAgent;
-        if (/iPhone/i.test(ua)) deviceInput.value = 'iPhone';
-        else if (/iPad/i.test(ua)) deviceInput.value = 'iPad';
-        else if (/Macintosh|Mac OS/i.test(ua)) deviceInput.value = 'Mac';
-        else if (/Android/i.test(ua)) deviceInput.value = 'Android';
-        else if (/Windows/i.test(ua)) deviceInput.value = 'Windows';
-        else deviceInput.value = 'Web';
-      }
-      modal.style.display = 'flex';
-      document.body.style.overflow = 'hidden';
-      setTimeout(() => document.getElementById('memo-input-content')?.focus(), 100);
-    }
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    setTimeout(() => document.getElementById('memo-input-content')?.focus(), 80);
+  };
+
+  window.openEditMemoModal = function(id) {
+    const card = document.getElementById(id);
+    if (!card) return;
+
+    document.getElementById('memo-edit-id').value = id;
+    document.getElementById('memo-edit-date').value = card.getAttribute('data-date') || formatNow();
+    document.getElementById('memo-input-content').value = (card.getAttribute('data-raw-content') || '').trim();
+    document.getElementById('memo-input-source').value = card.getAttribute('data-source') || '';
+    document.getElementById('memo-input-author').value = card.getAttribute('data-author') || '';
+    document.getElementById('memo-input-tags').value = card.getAttribute('data-tags') || '';
+    document.getElementById('memo-input-device').value = card.getAttribute('data-device') || detectDeviceName();
+    document.getElementById('memo-input-images').value = card.getAttribute('data-images') || '';
+    document.getElementById('memo-input-pinned').checked = card.getAttribute('data-pinned') === 'true';
+
+    document.getElementById('memos-publish-modal-title').textContent = '编辑微语 / 书摘';
+    document.getElementById('memos-btn-submit-text').textContent = '保存修改';
+
+    refreshAuthUI();
+    const modal = document.getElementById('memos-publish-modal');
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    setTimeout(() => document.getElementById('memo-input-content')?.focus(), 80);
   };
 
   window.closePublishModal = function() {
@@ -571,16 +812,25 @@
     }
   };
 
-  window.openAuthModal = function() {
+  window.switchVaultTab = function(tab) {
+    const isSetup = tab === 'setup';
+    document.getElementById('tab-btn-unlock').classList.toggle('active', !isSetup);
+    document.getElementById('tab-btn-setup').classList.toggle('active', isSetup);
+    document.getElementById('memos-unlock-form').style.display = isSetup ? 'none' : 'block';
+    document.getElementById('memos-setup-form').style.display = isSetup ? 'block' : 'none';
+  };
+
+  window.openAuthModal = async function(defaultTab) {
     const modal = document.getElementById('memos-auth-modal');
-    if (modal) {
-      const cfg = getStoredAuthConfig();
-      document.getElementById('auth-repo').value = cfg.repo || 'feiyushaw/feiyushaw.github.io';
-      document.getElementById('auth-branch').value = cfg.branch || 'master';
-      document.getElementById('auth-token').value = cfg.token || '';
-      document.getElementById('auth-worker').value = cfg.worker || '';
-      modal.style.display = 'flex';
-      document.body.style.overflow = 'hidden';
+    if (!modal) return;
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+
+    if (defaultTab) {
+      switchVaultTab(defaultTab);
+    } else {
+      const vault = await fetchCloudVault();
+      switchVaultTab(vault && vault.initialized ? 'unlock' : 'setup');
     }
   };
 
@@ -599,44 +849,114 @@
     }
   };
 
-  // 本地凭证管理
-  function getStoredAuthConfig() {
-    try {
-      const data = localStorage.getItem('memos_auth_config');
-      return data ? JSON.parse(data) : {};
-    } catch(e) {
-      return {};
-    }
-  }
-
-  window.handleAuthSave = function(e) {
+  // ==================== 5. 密码解锁与初始化云端保险箱处理 ====================
+  window.handlePasswordUnlock = async function(e) {
     e.preventDefault();
-    const repo = document.getElementById('auth-repo').value.trim();
-    const branch = document.getElementById('auth-branch').value.trim() || 'master';
-    const token = document.getElementById('auth-token').value.trim();
-    const worker = document.getElementById('auth-worker').value.trim();
+    const pwd = document.getElementById('unlock-password').value.trim();
+    const remember = document.getElementById('unlock-remember').checked;
+    const btn = document.getElementById('btn-unlock-submit');
+    const origText = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = '解密验证中...';
 
-    if (!token && !worker) {
-      alert('请至少填写 GitHub Token 或 Worker 端点');
+    try {
+      await ensureUnlockedToken(pwd, remember);
+      document.getElementById('unlock-password').value = '';
+      showToast('🎉 密码验证通过，已解锁发布与编辑权限！');
+      closeAuthModal();
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = origText;
+    }
+  };
+
+  window.handleVaultSetup = async function(e) {
+    e.preventDefault();
+    const password = document.getElementById('setup-password').value.trim();
+    const token = document.getElementById('setup-token').value.trim();
+    const repo = document.getElementById('setup-repo').value.trim() || DEFAULT_REPO;
+    const branch = document.getElementById('setup-branch').value.trim() || DEFAULT_BRANCH;
+
+    if (password.length < 4) {
+      alert('请设定至少 4 位以上的发布密码');
       return;
     }
 
-    const cfg = { repo, branch, token, worker };
-    localStorage.setItem('memos_auth_config', JSON.stringify(cfg));
-    showToast('发布凭证已安全保存到本地浏览器');
-    closeAuthModal();
-  };
+    const btn = document.getElementById('btn-setup-submit');
+    const origText = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = '正在加密并同步到 GitHub...';
 
-  window.clearAuthCredentials = function() {
-    if (confirm('确定清除本地已保存的发布凭证吗？')) {
-      localStorage.removeItem('memos_auth_config');
-      document.getElementById('auth-token').value = '';
-      showToast('凭证已清除');
+    try {
+      // 1. 生成 AES-256-GCM 密文保险箱
+      const vaultObj = await encryptTokenWithPassword(token, password, repo, branch);
+      const vaultJsonStr = JSON.stringify(vaultObj, null, 2) + '\n';
+
+      // 2. 上传到仓库 static/memos-vault.json
+      const vaultPath = 'static/memos-vault.json';
+      const apiUrl = `https://api.github.com/repos/${repo}/contents/${vaultPath}`;
+      const getRes = await fetch(`${apiUrl}?ref=${branch}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/vnd.github.v3+json'
+        }
+      });
+
+      let sha = undefined;
+      if (getRes.status === 200) {
+        const fileData = await getRes.json();
+        sha = fileData.sha;
+      } else if (getRes.status !== 404) {
+        throw new Error(`GitHub Token 验证失败 (${getRes.status})，请检查 Token 是否具备 Contents 读写权限。`);
+      }
+
+      const putPayload = {
+        message: 'chore(memos): update encrypted password vault',
+        content: btoa(unescape(encodeURIComponent(vaultJsonStr))),
+        branch: branch
+      };
+      if (sha) putPayload.sha = sha;
+
+      const putRes = await fetch(apiUrl, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/vnd.github.v3+json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(putPayload)
+      });
+
+      if (!putRes.ok) {
+        const errData = await putRes.json();
+        throw new Error(`上传加密保险箱失败: ${errData.message || putRes.statusText}`);
+      }
+
+      cachedVault = vaultObj;
+      saveActiveAuth({ repo, branch, token }, true);
+      document.getElementById('setup-token').value = '';
+      document.getElementById('setup-password').value = '';
+      showToast('🎉 云端密码保险箱创建成功！以后在任何设备只需输入你刚设定的密码即可发布');
       closeAuthModal();
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = origText;
     }
   };
 
-  // 格式化当前时间 YYYY-MM-DD HH:mm:ss
+  window.clearAuthCredentials = function() {
+    localStorage.removeItem(STORAGE_KEY);
+    sessionStorage.removeItem(SESSION_KEY);
+    refreshAuthUI();
+    showToast('已清除本设备保存的解锁状态');
+    closeAuthModal();
+  };
+
+  // ==================== 6. YAML 序列化与增删改同步引擎 ====================
   function formatNow() {
     const now = new Date();
     const y = now.getFullYear();
@@ -648,7 +968,6 @@
     return `${y}-${m}-${d} ${hh}:${mm}:${ss}`;
   }
 
-  // 生成唯一 ID
   function generateId() {
     const now = new Date();
     const y = now.getFullYear();
@@ -658,17 +977,108 @@
     return `memo-${y}${m}${d}-${rand}`;
   }
 
-  // 提交发布逻辑 (直接通过 GitHub Contents API 更新 data/memos.yaml)
-  window.handlePublishSubmit = async function(e) {
-    e.preventDefault();
-    const auth = getStoredAuthConfig();
+  function buildYamlEntry(item) {
+    let entry = `\n- id: "${item.id}"\n  date: "${item.date}"\n`;
+    if (item.pinned) entry += `  pinned: true\n`;
+    const lines = item.content.split('\n');
+    if (lines.length > 1) {
+      entry += `  content: |\n`;
+      lines.forEach(l => { entry += `    ${l}\n`; });
+    } else {
+      entry += `  content: "${item.content.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"\n`;
+    }
+    if (item.source) entry += `  source: "${item.source.replace(/"/g, '\\"')}"\n`;
+    if (item.author) entry += `  author: "${item.author.replace(/"/g, '\\"')}"\n`;
+    if (item.device) entry += `  device: "${item.device.replace(/"/g, '\\"')}"\n`;
+    if (item.tags && item.tags.length > 0) {
+      entry += `  tags: [${item.tags.map(t => `"${t}"`).join(', ')}]\n`;
+    }
+    if (item.images && item.images.length > 0) {
+      entry += `  images:\n`;
+      item.images.forEach(img => { entry += `    - "${img}"\n`; });
+    }
+    return entry;
+  }
 
-    if (!auth.token && !auth.worker) {
-      alert('检测到您尚未配置发布口令或 GitHub Token，请先完成凭证设置。');
-      openAuthModal();
-      return;
+  // 从当前页面 DOM 卡片序列重建完整 YAML（用于精准编辑与删除）
+  function serializeAllDomCardsToYaml(overrideList) {
+    const header = `# ==============================================================================
+# 微语 / 书摘 / 个人推特数据源 (Memos & Quotes)
+# ==============================================================================
+`;
+    return header + overrideList.map(buildYamlEntry).join('');
+  }
+
+  function readAllMemosFromDom() {
+    const list = [];
+    document.querySelectorAll('.memo-card').forEach(card => {
+      const tagsRaw = card.getAttribute('data-tags') || '';
+      const imgsRaw = card.getAttribute('data-images') || '';
+      list.push({
+        id: card.getAttribute('data-id'),
+        date: card.getAttribute('data-date') || '',
+        pinned: card.getAttribute('data-pinned') === 'true',
+        content: (card.getAttribute('data-raw-content') || '').trim(),
+        source: card.getAttribute('data-source') || '',
+        author: card.getAttribute('data-author') || '',
+        device: card.getAttribute('data-device') || '',
+        tags: tagsRaw ? tagsRaw.split(',').filter(Boolean) : [],
+        images: imgsRaw ? imgsRaw.split('\n').map(s => s.trim()).filter(Boolean) : []
+      });
+    });
+    return list;
+  }
+
+  async function commitMemosYamlToGitHub(auth, updatedYamlContent, commitMsg) {
+    const repo = auth.repo || DEFAULT_REPO;
+    const branch = auth.branch || DEFAULT_BRANCH;
+    const filePath = 'data/memos.yaml';
+    const apiUrl = `https://api.github.com/repos/${repo}/contents/${filePath}`;
+
+    const getRes = await fetch(`${apiUrl}?ref=${branch}`, {
+      headers: {
+        'Authorization': `Bearer ${auth.token}`,
+        'Accept': 'application/vnd.github.v3+json'
+      }
+    });
+
+    let fileSha = undefined;
+    if (getRes.status === 200) {
+      const fileData = await getRes.json();
+      fileSha = fileData.sha;
+    } else if (getRes.status !== 404) {
+      throw new Error(`读取 GitHub 仓库失败 (${getRes.status})，请检查 Token 权限。`);
     }
 
+    const putPayload = {
+      message: commitMsg,
+      content: btoa(unescape(encodeURIComponent(updatedYamlContent))),
+      branch: branch
+    };
+    if (fileSha) putPayload.sha = fileSha;
+
+    const putRes = await fetch(apiUrl, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${auth.token}`,
+        'Accept': 'application/vnd.github.v3+json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(putPayload)
+    });
+
+    if (!putRes.ok) {
+      const errData = await putRes.json();
+      throw new Error(`提交失败 (${putRes.status}): ${errData.message || putRes.statusText}`);
+    }
+  }
+
+  // 提交新微语或保存编辑
+  window.handlePublishSubmit = async function(e) {
+    e.preventDefault();
+
+    const editId = document.getElementById('memo-edit-id').value.trim();
+    const editDate = document.getElementById('memo-edit-date').value.trim();
     const content = document.getElementById('memo-input-content').value.trim();
     const source = document.getElementById('memo-input-source').value.trim();
     const author = document.getElementById('memo-input-author').value.trim();
@@ -677,168 +1087,145 @@
     const imagesStr = document.getElementById('memo-input-images').value.trim();
     const pinned = document.getElementById('memo-input-pinned').checked;
 
+    const quickPwd = document.getElementById('memo-quick-password')?.value || '';
+    const rememberDevice = document.getElementById('memo-remember-device')?.checked ?? true;
+
     if (!content) {
       alert('请填写微语正文内容');
       return;
     }
 
-    const tags = tagsStr ? tagsStr.split(/[,，\s]+/).filter(Boolean) : [];
-    const images = imagesStr ? imagesStr.split('\n').map(s => s.trim()).filter(Boolean) : [];
-    const nowStr = formatNow();
-    const memoId = generateId();
-
     const submitBtn = document.getElementById('memos-btn-submit');
-    const originalText = submitBtn.innerHTML;
+    const submitText = document.getElementById('memos-btn-submit-text');
+    const origLabel = submitText.textContent;
     submitBtn.disabled = true;
-    submitBtn.innerHTML = '<span>发布中...</span>';
+    submitText.textContent = '正在同步...';
 
     try {
-      // 构造新条目的 YAML 格式文本
-      let newYamlEntry = `\n- id: "${memoId}"\n  date: "${nowStr}"\n`;
-      if (pinned) newYamlEntry += `  pinned: true\n`;
-      
-      // 正文多行缩进处理
-      const contentLines = content.split('\n');
-      if (contentLines.length > 1) {
-        newYamlEntry += `  content: |\n`;
-        contentLines.forEach(line => {
-          newYamlEntry += `    ${line}\n`;
-        });
-      } else {
-        newYamlEntry += `  content: "${content.replace(/"/g, '\\"')}"\n`;
-      }
+      const auth = await ensureUnlockedToken(quickPwd, rememberDevice);
+      const tags = tagsStr ? tagsStr.split(/[,，\s]+/).filter(Boolean) : [];
+      const images = imagesStr ? imagesStr.split('\n').map(s => s.trim()).filter(Boolean) : [];
 
-      if (source) newYamlEntry += `  source: "${source.replace(/"/g, '\\"')}"\n`;
-      if (author) newYamlEntry += `  author: "${author.replace(/"/g, '\\"')}"\n`;
-      if (device) newYamlEntry += `  device: "${device}"\n`;
-      if (tags.length > 0) newYamlEntry += `  tags: [${tags.map(t => `"${t}"`).join(', ')}]\n`;
-      if (images.length > 0) {
-        newYamlEntry += `  images:\n`;
-        images.forEach(img => {
-          newYamlEntry += `    - "${img}"\n`;
-        });
-      }
-
-      if (auth.token) {
-        // 直连 GitHub API 提交
-        const repo = auth.repo || 'feiyushaw/feiyushaw.github.io';
-        const branch = auth.branch || 'master';
-        const filePath = 'data/memos.yaml';
-        const getUrl = `https://api.github.com/repos/${repo}/contents/${filePath}?ref=${branch}`;
-
-        const getRes = await fetch(getUrl, {
-          headers: {
-            'Authorization': `Bearer ${auth.token}`,
-            'Accept': 'application/vnd.github.v3+json'
-          }
-        });
-
-        let fileSha = undefined;
-        let currentContent = '';
-
-        if (getRes.status === 200) {
-          const fileData = await getRes.json();
-          fileSha = fileData.sha;
-          currentContent = decodeURIComponent(escape(atob(fileData.content.replace(/\n/g, ''))));
-        } else if (getRes.status === 404) {
-          // 远端文件尚未存在时，作为新文件创建
-          currentContent = '# ==============================================================================\n# 微语 / 书摘 / 个人推特数据源 (Memos & Quotes)\n# ==============================================================================\n';
-        } else {
-          throw new Error(`连接 GitHub 仓库失败 (${getRes.status}): 请检查 Token 权限是否包含 Contents (Read and write) 及仓库名。`);
-        }
-        
-        // 在现存文件头部插入新条目（保留注释头）
-        const headerEndMatch = currentContent.match(/# ===+\n/);
-        let updatedContent = '';
-        if (headerEndMatch) {
-          const splitIdx = headerEndMatch.index + headerEndMatch[0].length;
-          updatedContent = currentContent.slice(0, splitIdx) + newYamlEntry + currentContent.slice(splitIdx);
-        } else {
-          updatedContent = newYamlEntry + '\n' + currentContent;
-        }
-
-        const putPayload = {
-          message: `feat(memos): add new memo ${memoId}`,
-          content: btoa(unescape(encodeURIComponent(updatedContent))),
-          branch: branch
-        };
-        if (fileSha) {
-          putPayload.sha = fileSha;
-        }
-
-        const putRes = await fetch(getUrl, {
-          method: 'PUT',
-          headers: {
-            'Authorization': `Bearer ${auth.token}`,
-            'Accept': 'application/vnd.github.v3+json',
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(putPayload)
-        });
-
-        if (!putRes.ok) {
-          const errData = await putRes.json();
-          throw new Error(`提交失败 (${putRes.status}): ${errData.message || putRes.statusText}`);
-        }
-      } else if (auth.worker) {
-        // 自定义 Worker 模式
-        const workerRes = await fetch(auth.worker, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            content, source, author, tags, device, images, pinned, date: nowStr, id: memoId
-          })
-        });
-        if (!workerRes.ok) {
-          throw new Error(`Worker 响应异常: ${workerRes.statusText}`);
-        }
-      }
-
-      // 乐观 UI 更新：在前端即时插入卡片
-      insertOptimisticCard({
-        id: memoId,
-        date: nowStr,
+      const memoItem = {
+        id: editId || generateId(),
+        date: editDate || formatNow(),
+        pinned: pinned,
         content: content,
         source: source,
         author: author,
-        tags: tags,
         device: device,
-        images: images,
-        pinned: pinned
-      });
+        tags: tags,
+        images: images
+      };
 
-      showToast('🎉 发布成功！已同步至 GitHub，正在自动构建部署');
-      document.getElementById('memos-publish-form').reset();
+      const allMemos = readAllMemosFromDom();
+      if (editId) {
+        const idx = allMemos.findIndex(m => m.id === editId);
+        if (idx !== -1) allMemos[idx] = memoItem;
+        else allMemos.unshift(memoItem);
+      } else {
+        allMemos.unshift(memoItem);
+      }
+
+      // 保持置顶在前
+      const sortedMemos = [
+        ...allMemos.filter(m => m.pinned),
+        ...allMemos.filter(m => !m.pinned)
+      ];
+
+      const updatedYaml = serializeAllDomCardsToYaml(sortedMemos);
+      const commitMsg = editId
+        ? `chore(memos): update memo ${memoItem.id}`
+        : `feat(memos): add new memo ${memoItem.id}`;
+
+      await commitMemosYamlToGitHub(auth, updatedYaml, commitMsg);
+
+      renderOrUpdateDomCard(memoItem, Boolean(editId));
+      showToast(editId ? '✨ 修改已保存并同步至 GitHub' : '🎉 发布成功！已同步至 GitHub');
+      document.getElementById('memo-quick-password').value = '';
       closePublishModal();
-
     } catch (err) {
-      alert(`发布遇到错误: ${err.message}`);
+      alert(err.message);
     } finally {
       submitBtn.disabled = false;
-      submitBtn.innerHTML = originalText;
+      submitText.textContent = origLabel;
     }
   };
 
-  // 乐观更新卡片插入
-  function insertOptimisticCard(data) {
+  // 在线删除指定微语
+  window.handleDeleteMemo = async function(id) {
+    const card = document.getElementById(id);
+    if (!card) return;
+
+    let auth = getActiveAuth();
+    if (!auth || !auth.token) {
+      const pwd = prompt('🔑 请输入发布密码以删除此条微语：');
+      if (!pwd) return;
+      try {
+        auth = await ensureUnlockedToken(pwd, true);
+      } catch (err) {
+        alert(err.message);
+        return;
+      }
+    } else {
+      if (!confirm('确定要删除这条微语吗？此操作将直接同步至 GitHub 仓库。')) return;
+    }
+
+    try {
+      showToast('正在从仓库删除...');
+      const remaining = readAllMemosFromDom().filter(m => m.id !== id);
+      const updatedYaml = serializeAllDomCardsToYaml(remaining);
+      await commitMemosYamlToGitHub(auth, updatedYaml, `chore(memos): delete memo ${id}`);
+
+      card.style.opacity = '0';
+      card.style.transform = 'scale(0.96)';
+      setTimeout(() => {
+        card.remove();
+        updateDisplay();
+      }, 220);
+      showToast('🗑️ 已删除微语并同步至 GitHub');
+    } catch (err) {
+      alert(`删除失败: ${err.message}`);
+    }
+  };
+
+  function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  function renderOrUpdateDomCard(data, isEdit) {
     const stream = document.getElementById('memos-stream');
     if (!stream) return;
 
-    const card = document.createElement('article');
+    let card = document.getElementById(data.id);
+    if (!card) {
+      card = document.createElement('article');
+      card.id = data.id;
+    }
+
     card.className = 'memo-card' + (data.pinned ? ' memo-card--pinned' : '') + ' memo-card--highlight';
-    card.id = data.id;
     card.setAttribute('data-id', data.id);
-    card.setAttribute('data-tags', data.tags.join(','));
-    card.setAttribute('data-search', `${data.content} ${data.source || ''} ${data.author || ''} ${data.tags.join(',')}`);
+    card.setAttribute('data-date', data.date);
+    card.setAttribute('data-pinned', data.pinned ? 'true' : 'false');
+    card.setAttribute('data-raw-content', data.content);
+    card.setAttribute('data-source', data.source || '');
+    card.setAttribute('data-author', data.author || '');
+    card.setAttribute('data-device', data.device || '');
+    card.setAttribute('data-tags', (data.tags || []).join(','));
+    card.setAttribute('data-images', (data.images || []).join('\n'));
+    card.setAttribute('data-search', `${data.content} ${data.source || ''} ${data.author || ''} ${(data.tags || []).join(',')}`);
 
     let sourceHtml = '';
     if (data.source || data.author) {
       sourceHtml = `
         <div class="memo-source-card">
           <div class="memo-source-card__icon">
-            <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+            <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
           </div>
           <div class="memo-source-card__info">
+            <span>——</span>
             ${data.source ? `<span class="memo-source-card__title">${escapeHtml(data.source)}</span>` : ''}
             ${data.author ? `<span class="memo-source-card__author">/ ${escapeHtml(data.author)}</span>` : ''}
           </div>
@@ -846,22 +1233,17 @@
       `;
     }
 
-    let tagsHtml = data.tags.map(t => `<button type="button" class="memo-tag" onclick="filterByTag('${t}')">#${t}</button>`).join(' ');
+    let tagsHtml = (data.tags || []).map(t => `<button type="button" class="memo-tag" onclick="filterByTag('${escapeHtml(t)}')">#${escapeHtml(t)}</button>`).join(' ');
 
     card.innerHTML = `
-      <div class="memo-card__avatar-col">
-        <img src="${document.querySelector('.memos-profile-card__avatar')?.src || '/img/avatar.png'}" alt="Avatar" class="memo-card__avatar" style="width:40px;height:40px;border-radius:50%;object-fit:cover;" />
-        <div class="memo-card__line"></div>
-      </div>
       <div class="memo-card__body">
         <header class="memo-card__header">
-          <div class="memo-card__author-info">
-            <span class="memo-card__author-name">${document.querySelector('.memos-profile-card__name')?.textContent || 'Author'}</span>
+          <div class="memo-card__meta-left">
             ${data.pinned ? '<span class="memo-badge memo-badge--pinned">置顶</span>' : ''}
+            <time class="memo-time" datetime="${escapeHtml(data.date)}">${escapeHtml(data.date)}</time>
           </div>
           <div class="memo-card__meta-right">
-            ${data.device ? `<span class="memo-device">${data.device}</span>` : ''}
-            <time class="memo-time" datetime="${data.date}">${data.date}</time>
+            ${data.device ? `<span class="memo-device">${escapeHtml(data.device)}</span>` : ''}
           </div>
         </header>
         <div class="memo-card__content heti">
@@ -871,26 +1253,22 @@
         <footer class="memo-card__footer">
           <div class="memo-card__tags">${tagsHtml}</div>
           <div class="memo-card__actions">
-            <button type="button" class="memo-action-btn" onclick="copyMemoText(this, '${data.id}')"><span class="memo-action-text">复制</span></button>
-            <button type="button" class="memo-action-btn" onclick="copyMemoLink(this, '${data.id}')"><span class="memo-action-text">链接</span></button>
+            <button type="button" class="memo-action-btn" onclick="copyMemoText('${data.id}')"><span>复制</span></button>
+            <button type="button" class="memo-action-btn" onclick="copyMemoLink('${data.id}')"><span>链接</span></button>
+            <button type="button" class="memo-action-btn" onclick="openEditMemoModal('${data.id}')"><span>编辑</span></button>
+            <button type="button" class="memo-action-btn memo-action-btn--danger" onclick="handleDeleteMemo('${data.id}')"><span>删除</span></button>
           </div>
         </footer>
       </div>
     `;
 
-    stream.insertBefore(card, stream.firstChild);
-    const countEl = document.getElementById('total-count');
-    if (countEl) {
-      countEl.textContent = parseInt(countEl.textContent || '0') + 1;
+    if (!isEdit) {
+      stream.insertBefore(card, stream.firstChild);
     }
+    updateDisplay();
   }
 
-  function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-  }
-
+  // 快捷键与初始化
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
       const lb = document.getElementById('memos-lightbox');
@@ -901,14 +1279,14 @@
       closePublishModal();
       closeAuthModal();
     }
-    // 快捷键 Cmd/Ctrl + K 打开写说说
     if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
       e.preventDefault();
       openPublishModal();
     }
   });
 
-  // 处理 URL 中的 Hash 锚点自动滚动和高亮
+  refreshAuthUI();
+
   if (window.location.hash) {
     const targetId = window.location.hash.substring(1);
     const targetCard = document.getElementById(targetId);
