@@ -83,7 +83,7 @@ a.friend-link {
   background-image: none !important;
 }
 
-. article-content a.friend-link:hover,
+.article-content a.friend-link:hover,
 .prose a.friend-link:hover,
 a.friend-link:hover {
   background-image: none !important;
