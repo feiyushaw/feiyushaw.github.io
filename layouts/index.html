@@ -33,6 +33,18 @@
           <a href="{{ "archives/" | relLangURL }}">归档</a>
           <a href="{{ "gallery/" | relLangURL }}">摄影</a>
           <a href="{{ "about/" | relLangURL }}">关于</a>
+          <button
+            id="appearance-switcher"
+            aria-label="Dark mode switcher"
+            type="button"
+            class="homepage-theme-toggle">
+            <span class="flex items-center justify-center dark:hidden">
+              {{ partial "icon.html" "moon" }}
+            </span>
+            <span class="items-center justify-center hidden dark:flex">
+              {{ partial "icon.html" "sun" }}
+            </span>
+          </button>
         </nav>
 
         <div class="homepage-copy">

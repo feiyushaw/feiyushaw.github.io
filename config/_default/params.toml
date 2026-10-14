@@ -7,7 +7,7 @@
 
 colorScheme = "slate"
 defaultAppearance = "light" # valid options: light or dark
-autoSwitchAppearance = false
+autoSwitchAppearance = true
 
 enableSearch = true
 enableCodeCopy = true
@@ -24,7 +24,7 @@ mainSections = ["posts"]
   showMenu = false
   showCopyright = true
   showThemeAttribution = true
-  showAppearanceSwitcher = false
+  showAppearanceSwitcher = true
   showScrollToTop = true
   showTranslations = false
 

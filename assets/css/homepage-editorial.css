@@ -124,6 +124,39 @@
   width: 100%;
 }
 
+.homepage-theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent !important;
+  border: none !important;
+  cursor: pointer;
+  padding: 0.2rem;
+  margin-left: 0.2rem;
+  color: var(--editorial-muted) !important;
+  transition: color 0.2s ease, transform 0.2s ease;
+  line-height: 1;
+}
+
+.homepage-theme-toggle:hover {
+  color: var(--editorial-ink) !important;
+  transform: scale(1.1);
+}
+
+.homepage-theme-toggle .icon {
+  width: 1.15rem;
+  height: 1.15rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.homepage-theme-toggle .icon svg {
+  width: 100%;
+  height: 100%;
+  fill: currentColor;
+}
+
 /* 中部核心文案 */
 .homepage-copy {
   margin: auto 0;
